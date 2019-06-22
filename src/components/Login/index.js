@@ -1,20 +1,26 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, Button } from 'react-native'
+import { Platform, StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import Firebase from '../../Firebase';
 
 class Login extends Component {
 
-    constructor(props) {
-      super(props);
-      this.state = { email: '', password: '', errorMessage: null };
-    }
+  constructor(props) {
+    super(props);
+    this.state = { email: '', password: '', errorMessage: null };
+  }
 
-    handleLogin = () => {
-      console.log('handleLogin')
-    }
+  handleLogin = () => {
+    const { email, password } = this.state
+    Firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => this.props.navigation.navigate('Main'))
+      .catch(error => this.setState({ errorMessage: error.message }))
+  }
 
-    render() {
-      return (
-        <View style={styles.container}>
+  render() {
+    return (
+      <View style={styles.container}>
         <Text>Login</Text>
         {this.state.errorMessage &&
           <Text style={{ color: 'red' }}>
@@ -41,24 +47,24 @@ class Login extends Component {
           onPress={() => this.props.navigation.navigate('SignUp')}
         />
       </View>
-      );
-    }
+    );
   }
+}
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'green',
-    },
-    textInput: {
-      height: 40,
-      width: '90%',
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginTop: 8
-    }
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'green',
+  },
+  textInput: {
+    height: 40,
+    width: '90%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 8
+  }
+});
 
-  export default Login;
+export default Login;

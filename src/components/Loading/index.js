@@ -1,28 +1,36 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, ActivityIndicator} from 'react-native'
+import { Platform, StyleSheet, Text, View, ActivityIndicator, Button } from 'react-native'
+import Firebase from '../../Firebase';
 
 class Loading extends Component {
-   
-  constructor(props) {
-      super(props);
-      this.state = { check: false };
-    }
 
-    render() {
-      return (
-        <View style={styles.container}>
-        </View>
-      );
-    }
+  constructor(props) {
+    super(props);
+    this.state = { check: false };
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'pink',
-    },
-  });
+  componentDidMount() {
+    Firebase.auth().onAuthStateChanged(user => {
+      this.props.navigation.navigate(user ? 'Home' : 'SignUp')
+    })
+  }
 
-  export default Loading;
+  render() {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'pink',
+  },
+});
+
+export default Loading;
