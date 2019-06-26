@@ -17,6 +17,14 @@ class Home extends Component {
     Firebase.auth().signOut()
   }
 
+  // handleLogOut = async () => {
+  //   try {
+  //     await Firebase.auth().signOut();
+  //     this.props.navigation.navigate('Loading');
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 
   render() {
     const { currentUser } = this.state;

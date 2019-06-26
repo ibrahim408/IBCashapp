@@ -10,9 +10,15 @@ class Loading extends Component {
   }
 
   componentDidMount() {
-    Firebase.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'Home' : 'SignUp')
-    })
+    try {
+      Firebase.auth().onAuthStateChanged(user => {
+        console.log(user);
+        this.props.navigation.navigate(user ? 'Home' : 'SignUp')
+      })
+    } catch (e) {
+      console.log('error: ', e)
+    }
+
   }
 
   render() {
@@ -29,7 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'pink',
+    backgroundColor: 'red',
   },
 });
 

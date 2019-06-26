@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
-
-import Home from '../components/Home';
-import Loading from '../components/Loading';
-import Login from '../components/Login';
-import SignUp from '../components/SignUp';
+import Home from '../screens/Home';
+import Loading from '../screens/Loading';
+import Login from '../screens/Login';
+import SignUp from '../screens/SignUp';
 
 
 const AppNavigator = createStackNavigator(
