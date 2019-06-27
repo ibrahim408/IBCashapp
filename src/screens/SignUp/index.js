@@ -1,6 +1,16 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, TextInput, Button } from 'react-native'
-import Firebase from '../../Firebase';
+import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import { signUp } from '../../redux/actions/App'
+import { connect } from "react-redux";
+
+const mapDispatchToProps = {
+  signUp,
+}
+
+const mapStateToProps = ({ user }) => ({
+  isAuthenticated: user.isAuthenticated,
+  signUpError: user.signUpError
+})
 
 class SignUp extends Component {
 
@@ -12,13 +22,17 @@ class SignUp extends Component {
       errorMessage: null
     };
   }
+  componentDidUpdate(prevProps) {
+    if (prevProps.isAuthenticated == false && this.props.isAuthenticated == true) {
+      this.props.navigation.navigate('Main');
+    }else if(prevProps.signUpError != this.props.signUpError){
+      this.setState({errorMessage: this.props.signUpError})
+    }
+  }
 
   handleSignUp = () => {
-    Firebase
-      .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
+    const { email, password } = this.state
+    this.props.signUp(email, password);
   }
 
   render() {
@@ -70,4 +84,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignUp;
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+

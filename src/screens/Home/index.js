@@ -1,37 +1,37 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, Button } from 'react-native'
-import Firebase from '../../Firebase';
+import { StyleSheet, Text, View, Button } from 'react-native'
+import { logOut } from '../../redux/actions/App'
+import { connect } from "react-redux";
+
+const mapDispatchToProps = {
+  logOut,
+}
+
+const mapStateToProps = ({user}) => ({
+  user: user.currentUser
+})
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { currentUser: null };
-  }
+
+  state = { 
+    currentUser: null 
+  };
 
   componentDidMount() {
-    const { currentUser } = Firebase.auth()
-    this.setState({ currentUser })
+    const  currentUser  = this.props.user;
+    this.setState({ currentUser: currentUser})
   }
 
-  handleLogOut = () =>{
-    Firebase.auth().signOut()
+  handleLogOut = () => {
+    this.props.logOut();
   }
-
-  // handleLogOut = async () => {
-  //   try {
-  //     await Firebase.auth().signOut();
-  //     this.props.navigation.navigate('Loading');
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
 
   render() {
     const { currentUser } = this.state;
     return (
       <View style={styles.container}>
         <Text>
-          Hi {currentUser && currentUser.email}!
+          Hi {currentUser && currentUser.firstName}!
         </Text>
         <Button
           title="log out"
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'yellow',
+    backgroundColor: 'white',
   },
 });
 
-export default Home;
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,26 +1,38 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, ActivityIndicator, Button } from 'react-native'
+import {StyleSheet, View, ActivityIndicator } from 'react-native'
 import Firebase from '../../Firebase';
+import { fetchUserDetails } from '../../redux/actions/App'
+import { connect } from "react-redux";
+
+const mapDispatchToProps = {
+  fetchUserDetails,
+}
+
+const mapStateToProps = ({user}) => ({
+  user: user.currentUser
+})
 
 class Loading extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = { check: false };
-  }
 
   componentDidMount() {
     try {
       Firebase.auth().onAuthStateChanged(user => {
-        console.log(user);
-        this.props.navigation.navigate(user ? 'Home' : 'SignUp')
+        if(user){
+          this.props.fetchUserDetails(user.uid);
+        }else{
+          this.props.navigation.navigate('SignUp');
+        }
       })
     } catch (e) {
       console.log('error: ', e)
     }
 
   }
-
+  componentDidUpdate(prevProps){
+    if(prevProps.user !== this.props.user){
+      this.props.navigation.navigate("Home");
+    }
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -35,8 +47,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
+    backgroundColor: 'white',
   },
 });
 
-export default Loading;
+export default connect(mapStateToProps,mapDispatchToProps)(Loading);

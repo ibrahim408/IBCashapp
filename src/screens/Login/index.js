@@ -1,6 +1,17 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, Text, View, TextInput, Button } from 'react-native'
-import Firebase from '../../Firebase';
+import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import { logIn } from '../../redux/actions/App'
+import { connect } from "react-redux";
+
+const mapDispatchToProps = {
+  logIn,
+}
+
+const mapStateToProps = ({ user }) => ({
+  isAuthenticated: user.isAuthenticated,
+  logInError: user.logInError
+})
+
 
 class Login extends Component {
 
@@ -8,14 +19,18 @@ class Login extends Component {
     super(props);
     this.state = { email: '', password: '', errorMessage: null };
   }
+  
+  componentDidUpdate(prevProps) {
+    if (prevProps.isAuthenticated == false && this.props.isAuthenticated == true) {
+      this.props.navigation.navigate('Main');
+    }else if(prevProps.logInError != this.props.logInError){
+      this.setState({errorMessage: this.props.logInError})
+    }
+  }
 
   handleLogin = () => {
     const { email, password } = this.state
-    Firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Main'))
-      .catch(error => this.setState({ errorMessage: error.message }))
+    this.props.logIn(email, password);
   }
 
   render() {
@@ -56,7 +71,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   textInput: {
     height: 40,
@@ -67,4 +82,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Login;
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
