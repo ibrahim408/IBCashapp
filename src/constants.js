@@ -6,7 +6,11 @@ const constant = {
     LOG_OUT: 'LOG_OUT',
     FETCH_USER_DETAILS: 'FETCH_USER_DETAILS',
     SIGN_UP_FAIL: 'SIGN_UP_FAIL',
-    LOG_IN_FAIL: 'LOG_IN_FAIL'
+    LOG_IN_FAIL: 'LOG_IN_FAIL',
+    CARDS: 'Cards',
+    ADD_CARD: 'ADD_CARD',
+    UPDATE_CARD: 'UPDATE_CARD',
+    FETCH_CARDS: 'FETCH_CARDS'
 }
 
 export default constant;

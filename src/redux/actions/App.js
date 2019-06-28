@@ -89,6 +89,38 @@ getCards
 updateCards
 *////////////////////////////////////////////////////
 
+export const addCard = (name,cardNumber,expMonth,expYear,cvc,addressZip) => dispatch => {
+    
+    Firebase.firestore().collection(C.CARDS).add({
+        name: name,
+        cardNumber: cardNumber,
+        expMonth: expMonth,
+        expYear: expYear,
+        cvc: cvc,
+        addressZip: addressZip        
+    }).catch(error => console.log("ERROR :", error))
+}
+
+export const updateCards = () => {
+
+}
+
+export const fetchCards = () => dispatch => {
+    const docRef = Firebase.firestore().collection(C.CARDS);
+    docRef.get()
+    .then(snapshot => {
+        let cards = snapshot.docs.map(doc => {
+           return doc.data();
+        }); 
+
+        dispatch({
+            type: C.FETCH_CARDS,
+            payload: cards
+        })      
+    }).catch(function(error){
+        console.log("got an error",error);        
+    })   
+}
 
 /*
 transactions API

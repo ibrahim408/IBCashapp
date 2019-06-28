@@ -3,6 +3,7 @@ import Home from '../screens/Home';
 import Loading from '../screens/Loading';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
+import Card from '../screens/Card'
 
 const AppNavigator = createStackNavigator(
   {
@@ -29,6 +30,9 @@ const AppNavigator = createStackNavigator(
       navigationOptions: {
         header: null
       }
+    },
+    Card: {
+      screen: Card
     }
   },
   {
