@@ -2,7 +2,7 @@ import C from '../../constants'
 import Firebase from '../../Firebase'
 
 /* 
-user 
+user API
 login,sign up, fetch user
 *////////////////////////////////////////////////////
 
@@ -83,6 +83,16 @@ export const logOut = () => {
 }
 
 /*
+card API
+addCard
+getCards
+updateCards
+*////////////////////////////////////////////////////
 
+
+/*
+transactions API
+sendMoney
+requestMoney 
 *////////////////////////////////////////////////////
 
