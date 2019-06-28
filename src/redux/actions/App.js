@@ -3,7 +3,9 @@ import Firebase from '../../Firebase'
 
 /* 
 user API
-login,sign up, fetch user
+login
+sign up
+fetch user
 *////////////////////////////////////////////////////
 
 export const fetchUserDetails = (uid) => dispatch => {
@@ -40,7 +42,7 @@ export const logIn = (email, password) => dispatch => {
         })
 }
 
-export const signUp = (firstName,lastName,email, password) => dispatch => {
+export const signUp = (firstName, lastName, email, password) => dispatch => {
     Firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -89,42 +91,52 @@ getCards
 updateCards
 *////////////////////////////////////////////////////
 
-export const addCard = (name,cardNumber,expMonth,expYear,cvc,addressZip) => dispatch => {
-    
-    Firebase.firestore().collection(C.CARDS).add({
-        name: name,
-        cardNumber: cardNumber,
-        expMonth: expMonth,
-        expYear: expYear,
-        cvc: cvc,
-        addressZip: addressZip        
-    }).catch(error => console.log("ERROR :", error))
+export const createCard = (card) => dispatch => {
+
+    Firebase.firestore().collection(C.CARDS).add(card)
+        .then((ref) => {
+            console.log('dis here the: ', ref)
+            dispatch({
+                type: C.CREATE_CARD,
+            })
+        })
+        .catch(error => console.log("ERROR :", error))
 }
 
-export const updateCards = () => {
-
+export const updateCards = (cardUpdates) => dispatch => {
+    Firebase.firestore().collection(C.CARDS).doc(cardUpdates.id)
+        .update(cardUpdates)
+        .then(() => {
+            dispatch({
+                type: C.UPDATE_CARD
+            })
+        })
+        .catch(function (error) {
+            console.error("error des", error);
+        });
 }
 
 export const fetchCards = () => dispatch => {
     const docRef = Firebase.firestore().collection(C.CARDS);
     docRef.get()
-    .then(snapshot => {
-        let cards = snapshot.docs.map(doc => {
-           return doc.data();
-        }); 
+        .then(snapshot => {
+            let cards = snapshot.docs.map(doc => {
+                return { ...doc.data(), id: doc.id };
+            });
 
-        dispatch({
-            type: C.FETCH_CARDS,
-            payload: cards
-        })      
-    }).catch(function(error){
-        console.log("got an error",error);        
-    })   
+            dispatch({
+                type: C.FETCH_CARDS,
+                payload: cards
+            })
+        }).catch(function (error) {
+            console.log("got an error", error);
+        })
 }
+
 
 /*
 transactions API
 sendMoney
-requestMoney 
+requestMoney
 *////////////////////////////////////////////////////
 
