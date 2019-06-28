@@ -1,6 +1,11 @@
 import C from '../../constants'
 import Firebase from '../../Firebase'
 
+/* 
+user 
+login,sign up, fetch user
+*////////////////////////////////////////////////////
+
 export const fetchUserDetails = (uid) => dispatch => {
     Firebase.firestore().collection(C.USERS).doc(uid)
         .get().then(res => {
@@ -35,15 +40,15 @@ export const logIn = (email, password) => dispatch => {
         })
 }
 
-export const signUp = (email, password) => dispatch => {
+export const signUp = (firstName,lastName,email, password) => dispatch => {
     Firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then((user) => {
             var uid = user.user.uid;
             Firebase.firestore().collection(C.USERS).doc(uid).set({
-                firstName: 'ibrahim',
-                lastName: 'ibrahim',
+                firstName: firstName,
+                lastName: lastName,
                 email: email
             }).catch(error => console.log("ERROR :", error))
         })
@@ -76,4 +81,8 @@ export const logOut = () => {
         type: C.LOG_OUT
     })
 }
+
+/*
+
+*////////////////////////////////////////////////////
 

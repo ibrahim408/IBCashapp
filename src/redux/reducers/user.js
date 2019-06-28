@@ -15,21 +15,27 @@ export default(state = initialState, action) => {
         }
         case C.LOG_IN: return{
             ...state,
-            isAuthenticated: action.payload
+            isAuthenticated: action.payload,
+            signUpError: null,
+            logInError: null,
         }
         case C.SIGN_UP: return {
             ...state,
-            isAuthenticated: action.payload
+            isAuthenticated: action.payload,
+            signUpError: null,
+            logInError: null,
         }
         case C.SIGN_UP_FAIL: return {
             ...state,
             isAuthenticated: false,
-            signUpError: action.payload
+            signUpError: action.payload,
+            logInError: null
         }
         case C.LOG_IN_FAIL: return {
             ...state,
             isAuthenticated: false,
-            logInError: action.payload
+            logInError: action.payload,
+            signUpError: null,
         }
         case C.LOG_OUT: return {
             ...initialState
