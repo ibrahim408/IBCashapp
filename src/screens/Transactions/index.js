@@ -1,22 +1,43 @@
 import React, { Component } from 'react';
 import { View, Button } from 'react-native';
-import { fetchTransactions, sendMoneyOrRequest, acceptRequest } from '../../redux/actions/App'
+import { fetchCards, fetchTransactions, sendMoneyOrRequest, acceptRequest } from '../../redux/actions/App'
 import { connect } from "react-redux";
 
 const mapDispatchToProps = {
     fetchTransactions,
     sendMoneyOrRequest,
-    acceptRequest
+    acceptRequest,
+    fetchCards,
 }
 
 const mapStateToProps = (state) => ({
     transactions: state.transactions.transactions,
     isTransactionsFetched: state.transactions.isTransactionsFetched,
-    user: state.user.currentUser
+    user: state.user.currentUser,
+    isCardFetched: state.card.isCardFetched,
 });
 
 class Transactions extends Component {
-    state = {}
+    state = {
+        activeCard: ''
+    }
+    
+    componentDidMount(){
+        this.props.fetchTransactions();
+        this.props.fetchCards();
+    }
+
+    componentDidUpdate(prevProps){
+        if (prevProps.isCardFetched != this.props.isCardFetched && this.props.cards !== undefined) {
+            var active = this.props.cards.find((card) => {
+                return card.active == true;
+            })
+            if(active){
+                console.log('found active card');
+                this.setState({activeCard: active})
+            }
+        } 
+    }
 
     handleRequestMoneyOrRequest = (type) => {
         let transaction = {
@@ -33,18 +54,10 @@ class Transactions extends Component {
         console.log('will accept this:', this.props.transactions[0]);
         this.props.acceptRequest(this.props.transactions[0]);
     }
-    
-    handleFetchTransactions = () => {
-        this.props.fetchTransactions()
-    }
 
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: 'white' }}>
-                <Button
-                    title="fetch transactions"
-                    onPress={this.handleFetchTransactions}
-                />
                 <Button
                     title="send Money"
                     onPress={() => this.handleRequestMoneyOrRequest('send')}

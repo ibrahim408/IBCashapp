@@ -2,7 +2,7 @@ import C from '../../constants'
 
 const initialState = {
     cards: '',
-    isFetched: 0
+    isCardFetched: 0
 }
 
 export default(state = initialState, action) => {
@@ -13,7 +13,7 @@ export default(state = initialState, action) => {
         case C.FETCH_CARDS: return{
             ...state,
             cards: action.payload,
-            isFetched: state.isFetched+1
+            isCardFetched: state.isCardFetched+1
         }
         default:
             return state;

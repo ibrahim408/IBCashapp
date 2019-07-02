@@ -30,7 +30,7 @@ class Loading extends Component {
   }
   componentDidUpdate(prevProps){
     if(prevProps.user !== this.props.user){
-      this.props.navigation.navigate("Transaction");
+      this.props.navigation.navigate("SendTransaction");
     }
   }
   render() {

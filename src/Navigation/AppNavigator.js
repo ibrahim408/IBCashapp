@@ -5,6 +5,7 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Card from '../screens/Card'
 import Transaction from '../screens/Transactions'
+import SendTransaction from '../screens/SendTransaction'
 
 const AppNavigator = createStackNavigator(
   {
@@ -37,6 +38,9 @@ const AppNavigator = createStackNavigator(
     },
     Transaction: {
       screen: Transaction
+    },
+    SendTransaction: {
+      screen: SendTransaction
     }
   },
   {
