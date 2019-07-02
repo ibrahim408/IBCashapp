@@ -12,8 +12,8 @@ const config = {
     storageBucket: Configer.STORAGEBUCKET,
     messagingSenderId: Configer.MESSAGING_SENDER_ID
 };
-firebase.initializeApp(config);
 
+firebase.initializeApp(config);
 firebase.firestore().settings(settings);
 
 export default firebase;

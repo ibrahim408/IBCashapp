@@ -61,7 +61,7 @@ export const signUp = (firstName, lastName, email, password) => dispatch => {
             })
         })
         .catch(error => {
-            console.log('error mo fucka: ', error.code);
+            console.log('error mo: ', error.code);
             var errorFound;
             if (error.code == 'auth/weak-password')
                 errorFound = 'password to weak. Minimal 6 characters';
@@ -94,8 +94,7 @@ updateCards
 export const createCard = (card) => dispatch => {
 
     Firebase.firestore().collection(C.CARDS).add(card)
-        .then((ref) => {
-            console.log('dis here the: ', ref)
+        .then(() => {
             dispatch({
                 type: C.CREATE_CARD,
             })
@@ -133,10 +132,81 @@ export const fetchCards = () => dispatch => {
         })
 }
 
+export const getCards = () => dispatch => {
+    const docRef = Firebase.firestore().collection(C.CARDS);
+    docRef.get()
+        .then(snapshot => {
+            let cards = snapshot.docs.map(doc => {
+                return { ...doc.data(), id: doc.id };
+            });
+
+            dispatch({
+                type: C.FETCH_CARDS,
+                payload: cards
+            })
+        }).catch(function (error) {
+            console.log("got an error", error);
+        })
+}
+
+export const cardListener = (db, dispatch) => dispatch => {
+    let doc = Firebase.firestore().collection(C.CARDS).doc('7WnsttTooEiIthfV4i7S');
+
+    let observer = doc.onSnapshot(docSnapshot => {
+        console.log(`Received doc snapshot: ${docSnapshot}`);
+        // ...
+    }, err => {
+        console.log(`Encountered error: ${err}`);
+    });
+};
 
 /*
 transactions API
-sendMoney
-requestMoney
+fetch transactions
+sendRequestMoney
+acceptRequest
 *////////////////////////////////////////////////////
 
+export const fetchTransactions = () => dispatch => {
+    const docRef = Firebase.firestore().collection(C.TRANSACTIONS);
+    docRef.get()
+        .then(snapshot => {
+            let transactions = snapshot.docs.map(doc => {
+                return { ...doc.data(), id: doc.id };
+            });
+
+            dispatch({
+                type: C.FETCH_TRANSACTIONS,
+                payload: transactions
+            })
+        }).catch(function (error) {
+            console.log("got an error", error);
+        })    
+}
+
+export const sendMoneyOrRequest = (transaction) => dispatch => {
+    Firebase.firestore().collection(C.TRANSACTIONS).add(transaction)
+        .then((ref) => {
+            dispatch({
+                type: C.SEND_OR_REQUEST,
+            })
+        })
+        .catch(error => console.log("ERROR :", error))
+}
+
+export const acceptRequest = (transaction) => dispatch => {
+    Firebase.firestore().collection(C.TRANSACTIONS).doc(transaction.id)
+        .update({
+            type: 'send',
+            reciever: transaction.sender,
+            sender: transaction.reciever
+        })
+        .then(() => {
+            dispatch({
+                type: C.ACCEPT_REQUEST
+            })
+        })
+        .catch(function (error) {
+            console.error("error des", error);
+        });    
+}
