@@ -7,6 +7,7 @@ import SignUp from '../screens/SignUp';
 import Card from '../screens/Card'
 import Transaction from '../screens/Transactions'
 import SendTransaction from '../screens/SendTransaction'
+import Send from '../screens/Send'
 import Icon from "react-native-vector-icons/AntDesign";
 import color from '../config/colors'
 
@@ -41,10 +42,13 @@ const AppNavigator = createStackNavigator(
     },
     SendTransaction: {
       screen: SendTransaction
+    },
+    Send: {
+      screen: Send
     }
   },
   {
-    initialRouteName: "Home"
+    initialRouteName: "Send"
   }
 )
 
