@@ -7,6 +7,7 @@ let deviceHeight = Dimensions.get('window').height
 class CustomeCell extends Component {
     state = {}
     render() {
+        console.log(this.props.date)
         return (
             <View style={styles.container}>
                 <View style={styles.avatarContainer}>
@@ -15,7 +16,7 @@ class CustomeCell extends Component {
                 <View style={styles.detailContainer}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <Text style={{fontSize: 14 ,color: color.black}}>{this.props.from}</Text>
-                        <Text style={{fontSize: 8 ,color: color.grey}}>{this.props.date}</Text>
+                        <Text style={{fontSize: 14 ,color: color.grey}}>{this.props.date.month}/{this.props.date.day}</Text>
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                         <Text style={{fontSize: 14 ,color: color.grey}}>{this.props.description}</Text>

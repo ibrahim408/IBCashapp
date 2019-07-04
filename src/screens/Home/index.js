@@ -1,21 +1,23 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image } from 'react-native'
 import color from '../../config/colors'
-import { logOut } from '../../redux/actions/App'
+import { fetchCards, logOut } from '../../redux/actions/App'
 import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
-import activities from './activities'
-import CustomeCell from './CustomeCell'
+import ActivitiesList from './ActivitiesList'
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
 
 const mapDispatchToProps = {
+  fetchCards,
   logOut,
 }
 
-const mapStateToProps = ({ user }) => ({
-  user: user.currentUser
+const mapStateToProps = (state) => ({
+  user: state.user.currentUser,
+  cards: state.card.cards,
+  isCardFetched: state.card.isCardFetched,
 })
 
 class Home extends Component {
@@ -47,13 +49,44 @@ class Home extends Component {
   };
 
   state = {
+    activeCard: '',
+    last4Digits: '',
+    expMonth: '',
+    expYear: '',
+    type: '',
     cardtopPosition: 0,
   };
 
   componentDidMount() {
-    console.log(activities);
-    const currentUser = this.props.user;
-    this.setState({ currentUser: currentUser })
+    this.props.fetchCards();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isCardFetched != this.props.isCardFetched) {
+      var active = this.props.cards.find((card) => {
+        return card.active == true;
+      })
+      if (active) {
+        this.setActiveCard(active);
+      }
+    }
+  }
+
+  setActiveCard(active){
+    let last4Digits = active.cardNumber.toString().substr(active.cardNumber.toString().length - 4);
+    let expMonth = active.expMonth;
+    let expYear;
+
+    if(active.expYear > 2000){
+      expYear = active.expYear - 2000
+    }
+    this.setState({ 
+      activeCard: active, 
+      last4Digits: last4Digits,
+      expMonth: expMonth,
+      expYear: expYear,
+      type: active.type
+    })    
   }
 
   handleLogOut = () => {
@@ -66,7 +99,6 @@ class Home extends Component {
   }
 
   render() {
-    const { currentUser } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.topContainer}>
@@ -80,7 +112,7 @@ class Home extends Component {
                 <Text style={{ color: color.white, fontSize: 14 }}>Card Number
                 </Text>
                 <View style={{ marginTop: 5 }}>
-                  <Text style={{ color: color.white, fontSize: 20 }}>****   ****   *****   ****    9066
+                  <Text style={{ color: color.white, fontSize: 20 }}>****   ****   *****   ****    {this.state.last4Digits}
                   </Text>
                 </View>
               </View>
@@ -89,9 +121,9 @@ class Home extends Component {
               <Text style={{ color: color.white, fontSize: 14 }}>Expiration Date
                 </Text>
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginRight: deviceWidth / 18 }}>
-                <Text style={{ color: color.white, fontSize: 20 }}>12/26
+                <Text style={{ color: color.white, fontSize: 20 }}>{this.state.expMonth}/{this.state.expYear}
                 </Text>
-                <Text style={{ color: color.white }}>VISA
+                <Text style={{ color: color.white }}>{this.state.type}
                 </Text>
               </View>
             </View>
@@ -100,18 +132,19 @@ class Home extends Component {
         <View style={styles.middleContainer}>
           <View style={styles.balanceContaienr}>
             <View style={styles.balanceStyle}>
-              <View style={{ marginLeft:  deviceWidth / 18}}>
-                <Text  style={{fontSize: 12, color: color.grey}}>Account Balance
+              <View style={{ marginLeft: deviceWidth / 18 }}>
+                <Text style={{ fontSize: 12, color: color.grey }}>Account Balance
                 </Text>
               </View>
-              <View style={{ marginLeft:  deviceWidth / 18}}>
-                <Text style={{fontWeight: 'bold', fontSize: 20, color: color.moneyreceived}}>$359.54
+              <View style={{ marginLeft: deviceWidth / 18 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 20, color: color.moneyreceived }}>${this.props.user.balance}
                 </Text>
-              </View>              
+              </View>
             </View>
           </View>
           <View style={styles.transactionButtonContainer}>
-            <TouchableOpacity style={styles.buttonStyle}>
+            <TouchableOpacity style={styles.buttonStyle}
+            onPress={() => this.props.navigation.navigate("Send")}>
               <Icon
                 name="pluscircleo"
                 size={20}
@@ -120,32 +153,7 @@ class Home extends Component {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.bottomContainer}>
-          <View style={{ flexDirection: 'row', justifyContent: "space-between", marginTop: 10, }}>
-            <View style={{ marginTop: 5, marginLeft: 10 }}>
-              <Text style={{ fontSize: 20 }}>Activity</Text>
-            </View>
-            <View style={{ marginTop: 5 }}>
-              <TouchableOpacity style={styles.activityButtonStyle}>
-                <Text style={[{ fontSize: 10, color: color.activityButtonTextColor }]}>see all
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={{ flex: 1, marginTop: 5 }}>
-            <FlatList
-              data={activities}
-              renderItem={({ item }) => <CustomeCell
-                avatar={item.avatar}
-                from={item.from}
-                type={item.type}
-                description={item.description}
-                date={item.date}
-                amount={item.amount}
-              />}
-            />
-          </View>
-        </View>
+        <ActivitiesList />
       </View >
     );
   }
@@ -201,21 +209,6 @@ const styles = StyleSheet.create({
     backgroundColor: color.redButton,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  bottomContainer: {
-    flex: 11,
-    backgroundColor: color.tanbackGround,
-  },
-  activityButtonStyle: {
-    height: 20,
-    width: 50,
-    marginRight: deviceWidth / 20,
-    backgroundColor:
-      color.activityButtonColor,
-    borderRadius: 10,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 });
 

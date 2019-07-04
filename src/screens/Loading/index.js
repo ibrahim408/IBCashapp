@@ -30,7 +30,7 @@ class Loading extends Component {
   }
   componentDidUpdate(prevProps){
     if(prevProps.user !== this.props.user){
-      this.props.navigation.navigate("Send");
+      this.props.navigation.navigate("Home");
     }
   }
   render() {

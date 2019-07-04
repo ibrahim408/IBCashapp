@@ -21,16 +21,18 @@ const mapStateToProps = (state) => ({
 })
 
 class index extends Component {
-    static navigationOptions = {
+    static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             borderBottomWidth: 0,
         },
         headerLeft: (
-            <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}>
+            <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
+            onPress={() => navigation.goBack()}
+            >
                 <IconDos
-                    name="bell"
+                    name="arrow-left"
                     size={22}
-                    color={color.black}
+                    color={color.grey}
                 />
             </TouchableOpacity>
         ),
@@ -42,11 +44,11 @@ class index extends Component {
                 <Icon
                     name="setting"
                     size={22}
-                    color={color.black}
+                    color={color.grey}
                 />
             </TouchableOpacity>
         )
-    };
+    });
 
     state = {}
 
@@ -63,6 +65,7 @@ class index extends Component {
                 date: new Date()
             }
             this.props.sendMoneyOrRequest(transaction);
+            this.props.navigation.goBack()
         }
     }
 
