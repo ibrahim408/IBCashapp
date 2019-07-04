@@ -210,3 +210,17 @@ export const acceptRequest = (transaction) => dispatch => {
             console.error("error des", error);
         });    
 }
+
+export const setAmount = (amount) => dispatch => {
+    dispatch({
+        type: C.SET_AMOUNT,
+        payload: amount
+    })
+}
+
+export const setIsTenth = (boolean) => dispatch => {
+    dispatch({
+        type: C.SET_IS_TENTH,
+        payload: boolean
+    })
+}

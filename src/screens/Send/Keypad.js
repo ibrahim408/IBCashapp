@@ -3,172 +3,167 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-nati
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Entypo";
 import color from '../../config/colors'
+import { setAmount, setIsTenth } from '../../redux/actions/App'
+import { connect } from "react-redux";
+
+
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
-//Entypo dot-single
+
+
+const mapDispatchToProps = {
+    setAmount, 
+    setIsTenth
+}
+const mapStateToProps = ({transactions}) => ({
+    amount: transactions.amount,
+    isTenth: transactions.isTenth
+})
+
 class Keypad extends Component {
     state = {
         transactionAmount: 0,
-        isDecimal: false
+        isTenth: false,
+        isHundredth: false
     }
 
     onPress0 = () => {
-        if(this.state.transactionAmount != 0){
-            this.setState({transactionAmount : this.state.transactionAmount + '0'})
+        const amount = this.state.transactionAmount;
+        let decimalPlace = (amount.toString().split('.')[1] || []).length;
+
+        if (amount != 0 && decimalPlace < 2) {
+            if (this.state.isTenth == false) {
+                if (parseFloat(amount) % 1 == 0) {
+                    this.setState({ transactionAmount: parseFloat(amount).toFixed(2) })
+                } else {
+                    this.setState({ transactionAmount: parseFloat(amount.toString() + '0') })
+                }
+            } else {
+                this.setState({
+                    transactionAmount: amount.toFixed(1),
+                    isTenth: false
+                })
+            }
+
+        }
+    }
+    onDigitPress = (number) => {
+        let numberDecimal = number / 10;
+        const amount = this.props.amount
+        let decimalPlace = (amount.toString().split('.')[1] || []).length;
+
+        if (amount == 0) {
+            this.props.setAmount(number);
+        } else if (decimalPlace < 2) {
+            if (this.props.isTenth == false) {
+                this.props.setAmount(parseFloat(amount + number.toString()));
+            } else {
+                this.props.setAmount(amount + numberDecimal);
+                this.props.setIsTenth(false);
+            }
         }
     }
 
-    onPress1 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 1})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '1'})
-        }
-    }
 
-    onPress2 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 2})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '2'})
-        }
-    }
+    // onDigitPress = (number) => {
+    //     let numberDecimal = number / 10;
+    //     const amount = this.state.transactionAmount;
+    //     let decimalPlace = (amount.toString().split('.')[1] || []).length;
 
-    onPress3 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 3})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '3'})
-        }
-    }
-
-    onPress4 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 4})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '4'})
-        }
-    }
-
-    onPress5 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 5})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '5'})
-        }
-    }
-
-    onPress6 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 6})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '6'})
-        }
-    }
-
-    onPress7 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 7})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '7'})
-        }
-    }
-
-    onPress8 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 8})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '8'})
-        }
-    }
-
-    onPress9 = () => {
-        if(this.state.transactionAmount == 0){
-            this.setState({transactionAmount : 9})
-        }else{
-            this.setState({transactionAmount : this.state.transactionAmount + '9'})
-        }
-    }
-
-    onPressBackSpace = () => {
-        //backSpace(this.props.tag);
-    }
+    //     if (amount == 0) {
+    //         // this.setState({ transactionAmount: number })
+    //     } else if (decimalPlace < 2) {
+    //         if (this.state.isTenth == false) {
+    //             //this.setState({ transactionAmount: parseFloat(amount + number.toString()) })
+    //         } else {
+    //             // this.setState({
+    //             //     transactionAmount: amount + numberDecimal,
+    //             //     isTenth: false
+    //             // })
+    //         }
+    //     }
+    // }
 
     onPressDot = () => {
-        if(this.state.isDecimal == false){
-            this.setState({isDecimal: true});
+        if (this.props.isTenth == false && (this.props.amount % 1 == 0)) {
+            this.props.setIsTenth(true);
         }
-        // if(this.state.transactionAmount != 0){
-        //     this.setState({transactionAmount : this.state.transactionAmount + '9'})
-        // }        
     }
-    onPressHideKeyboard = () => {
-        //hideKeyboard(this.props.tag);
+
+    // bugggy
+    onPressBackSpace = () => {
+        // const amountString = this.state.transactionAmount;
+        // var newAmountStr = amountString.toString().substr(0, amountString.toString().length-1);
+
+        // console.log('old ', amountString);
+        // console.log('new ', newAmountStr);
+
+        // if((newAmountStr.toString().split('.')[1] || []).length == 1){
+        //     this.setState({
+        //         transactionAmount: parseFloat(newAmountStr),
+        //         isTenth: true
+        //     })
+        // }else{
+        //     this.setState({ 
+        //         transactionAmount: parseFloat(newAmountStr)
+        //     })
+        // } 
     }
 
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.recieverInfoContainer}>
+            <View style={styles.keyPadContainer}>
+                <View style={styles.keyPadColumn}>
+                    <TouchableOpacity onPress={() => this.onDigitPress(1)}>
+                        <Text style={styles.numberStyle}>1</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(2)}>
+                        <Text style={styles.numberStyle}>2</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(3)}>
+                        <Text style={styles.numberStyle}>3</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.amountContainer}>
-                    <Text style={styles.transactionAmountStyle}>${this.state.transactionAmount}</Text>
+                <View style={styles.keyPadColumn}>
+                    <TouchableOpacity onPress={() => this.onDigitPress(4)}>
+                        <Text style={styles.numberStyle}>4</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(5)}>
+                        <Text style={styles.numberStyle}>5</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(6)}>
+                        <Text style={styles.numberStyle}>6</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.keyPadContainer}>
-                    <View style={styles.keyPadColumn}>
-                        <TouchableOpacity onPress={this.onPress1}>
-                            <Text style={styles.numberStyle}>1</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress2}>
-                            <Text style={styles.numberStyle}>2</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress3}>
-                            <Text style={styles.numberStyle}>3</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.keyPadColumn}>
-                        <TouchableOpacity onPress={this.onPress4}>
-                            <Text style={styles.numberStyle}>4</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress5}>
-                            <Text style={styles.numberStyle}>5</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress6}>
-                            <Text style={styles.numberStyle}>6</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.keyPadColumn}>
-                        <TouchableOpacity onPress={this.onPress7}>
-                            <Text style={styles.numberStyle}>7</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress8}>
-                            <Text style={styles.numberStyle}>8</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress9}>
-                            <Text style={styles.numberStyle}>9</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.keyPadColumn}>
-                        <TouchableOpacity>
+                <View style={styles.keyPadColumn}>
+                    <TouchableOpacity onPress={() => this.onDigitPress(7)}>
+                        <Text style={styles.numberStyle}>7</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(8)}>
+                        <Text style={styles.numberStyle}>8</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.onDigitPress(9)}>
+                        <Text style={styles.numberStyle}>9</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.keyPadColumn}>
+                    <TouchableOpacity onPress={this.onPressDot}>
                         <IconDos
-                                name="dot-single"
-                                size={20}
-                                color={color.grey}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.onPress0}>
-                            <Text style={styles.numberStyle}>0</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Icon
-                                name="left"
-                                size={20}
-                                color={color.grey}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.requestOrPayContainer}>
+                            name="dot-single"
+                            size={20}
+                            color={color.grey}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.onPress0}>
+                        <Text style={styles.numberStyle}>0</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.onPressBackSpace}>
+                        <Icon
+                            name="left"
+                            size={20}
+                            color={color.grey}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -176,21 +171,6 @@ class Keypad extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    recieverInfoContainer: {
-        flex: 2,
-    },
-    amountContainer: {
-        flex: 3,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    transactionAmountStyle: {
-        fontSize: 100,
-        color: color.bluecard
-    },
     keyPadContainer: {
         flex: 3,
         flexDirection: 'column',
@@ -202,16 +182,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         height: 50,
-        marginLeft: deviceWidth / 15,
-        marginRight: deviceWidth / 15,
+        marginLeft: deviceWidth / 25,
+        marginRight: deviceWidth / 25,
     },
     numberStyle: {
         fontSize: 20,
         color: color.grey
-    },
-    requestOrPayContainer: {
-        flex: 1,
     }
 })
 
-export default Keypad;
+export default connect(mapStateToProps, mapDispatchToProps)(Keypad);

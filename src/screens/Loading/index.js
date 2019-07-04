@@ -20,8 +20,7 @@ class Loading extends Component {
         if(user){
           this.props.fetchUserDetails(user.uid);
         }else{
-          this.props.navigation.navigate('Home');
-          //this.props.navigation.navigate('SignUp');
+          this.props.navigation.navigate('SignUp');
         }
       })
     } catch (e) {
@@ -31,7 +30,7 @@ class Loading extends Component {
   }
   componentDidUpdate(prevProps){
     if(prevProps.user !== this.props.user){
-      this.props.navigation.navigate("Home");
+      this.props.navigation.navigate("Send");
     }
   }
   render() {

@@ -1,9 +1,24 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button } from 'react-native';
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
 import Keypad from './Keypad'
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { connect } from "react-redux";
+import { fetchCards, sendMoneyOrRequest } from '../../redux/actions/App'
+
+const mapDispatchToProps = {
+    fetchCards,
+    sendMoneyOrRequest
+}
+
+const mapStateToProps = (state) => ({
+    user: state.user.currentUser,
+    isCardFetched: state.card.isCardFetched,
+    amount: state.transactions.amount,
+})
 
 class index extends Component {
     static navigationOptions = {
@@ -20,7 +35,7 @@ class index extends Component {
             </TouchableOpacity>
         ),
         headerTitle: (
-            <Image style={{ width: 43, height: 43, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
+            <Image style={{ width: 75, height: 75, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
         ),
         headerRight: (
             <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
@@ -32,10 +47,93 @@ class index extends Component {
             </TouchableOpacity>
         )
     };
+
     state = {}
+
+    componentDidMount() {
+        this.props.fetchCards();
+    }
+
+    handleSubmitTransaction = (values) => {
+        if (this.props.amount != 0) {
+            let transaction = {
+                ...values,
+                senderEmail: this.props.user.email,
+                amount: this.props.amount,
+                date: new Date()
+            }
+            this.props.sendMoneyOrRequest(transaction);
+        }
+    }
+
     render() {
+        const { bindSubmitForm } = this.props;
         return (
-            <Keypad />
+            <Formik
+                initialValues={{ recieverEmail: '', description: '', type: '' }}
+                validationSchema={Yup.object({
+                    recieverEmail: Yup.string()
+                        .email('Invalid Email')
+                        .required('Required'),
+                    description: Yup.string(),
+                    type: Yup.string(),
+                })}
+                onSubmit={(values, formikActions) => {
+                    setTimeout(() => {
+                        this.handleSubmitTransaction(values);
+                        //Alert.alert(JSON.stringify(values));
+                        // Important: Make sure to setSubmitting to false so our loading indicator
+                        // goes away.
+                        formikActions.setSubmitting(false);
+                    }, 500);
+                }}>
+                {props => (
+                    <View style={styles.container}>
+                        <View style={styles.recieverInfoContainer}>
+                            <View>
+                                <TextInput
+                                    onChangeText={props.handleChange('recieverEmail')}
+                                    onBlur={props.handleBlur('recieverEmail')}
+                                    value={props.values.recieverEmail}
+                                    placeholder="Email Address"
+                                    style={styles.input}
+                                    autoFocus
+                                    autoCapitalize="none"
+                                />
+                                {props.touched.recieverEmail && props.errors.recieverEmail ? (
+                                    <Text style={styles.error}>{props.errors.recieverEmail}</Text>
+                                ) : null}
+                                <TextInput
+                                    onChangeText={props.handleChange('description')}
+                                    onBlur={props.handleBlur('description')}
+                                    value={props.values.description}
+                                    placeholder="payment for"
+                                    autoCapitalize="none"
+                                    style={styles.input}
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.amountContainer}>
+                            <Text style={styles.transactionAmountStyle}>${this.props.amount}</Text>
+                        </View>
+                        <Keypad />
+                        <View style={styles.requestOrPayContainer}>
+                            <TouchableOpacity style={styles.payButton} onPress={async () => {
+                                await props.setFieldValue('type', 'pay');
+                                props.handleSubmit();
+                            }} >
+                                <Text style={{ fontSize: 18, color: color.white }}>Pay</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.requestButton} onPress={async () => {
+                                await props.setFieldValue('type', 'request');
+                                props.handleSubmit();
+                            }} >
+                                <Text style={{ fontSize: 18, color: color.white }}>Request</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+            </Formik>
         );
     }
 }
@@ -43,7 +141,64 @@ class index extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white'
+    },
+    recieverInfoContainer: {
+        flex: 2,
+        justifyContent: 'flex-end',
+    },
+    amountContainer: {
+        flex: 3,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    transactionAmountStyle: {
+        fontSize: 100,
+        color: color.bluecard
+    },
+    requestOrPayContainer: {
+        flex: 1,
+        flexDirection: 'row'
+    },
+    error: {
+        margin: 8,
+        fontSize: 14,
+        color: 'red',
+        fontWeight: 'bold',
+    },
+    input: {
+        height: 50,
+        borderBottomColor: 'black',
+        borderBottomWidth: .25,
+        marginHorizontal: 20
+    },
+    requestButton: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 25,
+        marginRight: 25,
+        borderTopRightRadius: 12,
+        borderBottomRightRadius: 12,
+        backgroundColor: color.grey,
+        borderLeftWidth: .5,
+        borderBottomColor: 'black',
+    },
+    payButton: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        marginBottom: 25,
+        marginLeft: 25,
+        borderTopLeftRadius: 12,
+        borderBottomLeftRadius: 12,
+        backgroundColor: color.grey
     }
 })
-export default index;
+
+export default connect(mapStateToProps, mapDispatchToProps)(index);
+
+
+
+

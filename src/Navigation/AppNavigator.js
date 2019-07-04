@@ -48,7 +48,7 @@ const AppNavigator = createStackNavigator(
     }
   },
   {
-    initialRouteName: "Send"
+    initialRouteName: "Loading"
   }
 )
 
