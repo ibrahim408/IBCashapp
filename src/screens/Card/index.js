@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput,
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
-import { fetchCards } from '../../redux/actions/App'
+import { fetchCards,updateCard } from '../../redux/actions/App'
 import { connect } from "react-redux";
 
 let deviceWidth = Dimensions.get('window').width
@@ -11,7 +11,7 @@ let deviceHeight = Dimensions.get('window').height
 
 const mapDispatchToProps = {
     fetchCards,
-
+    updateCard
 }
 
 const mapStateToProps = (state) => ({
@@ -69,20 +69,25 @@ class Card extends Component {
             }
         }
     }
-
+    handlePressMakeDefault = (newActiveCard) => {
+        let resetOldActiveCard = {...this.state.activeCard, active: false}
+        let setNewActiveCard = {...newActiveCard, active: true}
+        this.props.updateCard(resetOldActiveCard);
+        this.props.updateCard(setNewActiveCard);
+        this.props.fetchCards();
+    }
     renderCards = (item, index) => {
         let lastIndex = this.props.cards.length - 1;
-        let iconLabel;
-        if (index == lastIndex)
-            iconLabel = 'staro'
-        else
-            iconLabel = 'star'
+        let cardNumber = item.cardNumber;
+        let last4Digits = cardNumber.toString().substr(cardNumber.toString().length - 4);
+        if (item.id == this.state.activeCard.id) {
+            return this.renderActiveCard('staro',last4Digits)
+        } else {
+            return this.renderNoActiveCard('star',last4Digits,item)
+        }
+    }
 
-        // <View style={[index != lastIndex ? styles.listColumnContainer :
-        //     {
-        //         ...styles.listColumnContainer,
-        //         borderBottomWidth: 0
-        //     }]}>
+    renderActiveCard = (iconLabel,last4Digits) => {
         return (
             <View style={styles.listColumnContainer}>
                 <View style={styles.creditCardContainer}>
@@ -95,12 +100,39 @@ class Card extends Component {
                     </View>
                 </View>
                 <View style={{ marginLeft: 20 }}>
-                    <Text style={{ fontSize: 18 }}>9543
+                    <Text style={{ fontSize: 18 }}>{last4Digits}
                     </Text>
                 </View>
             </View>
         )
     }
+    renderNoActiveCard = (iconLabel,last4Digits,item) => {
+        return (
+            <View style={[styles.listColumnContainer, { justifyContent: 'space-between' }]}>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={styles.creditCardContainer}>
+                        <View style={styles.iconContainer}>
+                            <Icon
+                                name={iconLabel}
+                                size={14}
+                                color={color.black}
+                            />
+                        </View>
+                    </View>
+                    <View style={{ marginLeft: 20 }}>
+                        <Text style={{ fontSize: 18 }}>{last4Digits}
+                </Text>
+                    </View>
+                </View>
+                <TouchableOpacity onPress={() => this.handlePressMakeDefault(item)}>
+                    <View style={{}}>
+                        <Text style={{ color: color.grey }}>Make default</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
 
     renderAddCard = () => {
         return (
@@ -132,14 +164,16 @@ class Card extends Component {
                 <View style={styles.listContainer}>
                     <FlatList
                         data={this.props.cards}
+                        extraData={this.state.activeCard}
                         renderItem={({ item, index }) => this.renderCards(item, index)}
                         keyExtractor={(item, index) => index.toString()}
+                        scrollEnabled={false}
                     />
                 </View>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('AddCard')}>
-                <View style={styles.addCardContainer}>
-                    {this.renderAddCard()}
-                </View>
+                    <View style={styles.addCardContainer}>
+                        {this.renderAddCard()}
+                    </View>
                 </TouchableOpacity>
             </View>
         );

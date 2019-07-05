@@ -155,7 +155,7 @@ class Home extends Component {
             </TouchableOpacity>
           </View>
         </View>
-        <ActivitiesList />
+        <ActivitiesList navigation={this.props.navigation}/>
       </View >
     );
   }

@@ -6,6 +6,7 @@ import SignUp from '../screens/SignUp';
 import Card from '../screens/Card'
 import AddCard from '../screens/AddCard'
 import Send from '../screens/Send'
+import AcceptRequest from '../screens/AcceptRequest'
 
 const AppNavigator = createStackNavigator(
   {
@@ -38,6 +39,9 @@ const AppNavigator = createStackNavigator(
     },
     Send: {
       screen: Send
+    },
+    AcceptRequest: {
+      screen: AcceptRequest
     }
   },
   {

@@ -102,7 +102,7 @@ export const createCard = (card) => dispatch => {
         .catch(error => console.log("ERROR :", error))
 }
 
-export const updateCards = (cardUpdates) => dispatch => {
+export const updateCard = (cardUpdates) => dispatch => {
     Firebase.firestore().collection(C.CARDS).doc(cardUpdates.id)
         .update(cardUpdates)
         .then(() => {

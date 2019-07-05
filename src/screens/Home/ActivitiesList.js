@@ -38,15 +38,17 @@ class ActivitiesList extends Component {
                         data={this.props.transactions}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => <CustomeCell
+                            navigation={this.props.navigation}
                             avatar={item.avatar}
                             from={item.recieverName}
                             type={item.type}
                             description={item.description}
                             amount={item.amount}
+                            id={item.id}
                             date3={Date(item.seconds)}
                             date={{
                                 day: new Date(Date(item.seconds)).getDay(),
-                                month:  new Date(Date(item.seconds)).getMonth() + 1
+                                month: new Date(Date(item.seconds)).getMonth() + 1
                             }}
                         />}
                     />
