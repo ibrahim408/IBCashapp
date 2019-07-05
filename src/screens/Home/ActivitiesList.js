@@ -36,6 +36,7 @@ class ActivitiesList extends Component {
                 <View style={{ flex: 1, marginTop: 5 }}>
                     <FlatList
                         data={this.props.transactions}
+                        keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => <CustomeCell
                             avatar={item.avatar}
                             from={item.recieverName}

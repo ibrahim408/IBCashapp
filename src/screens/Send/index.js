@@ -7,11 +7,13 @@ import Keypad from './Keypad'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from "react-redux";
-import { fetchCards, sendMoneyOrRequest } from '../../redux/actions/App'
+import { fetchCards, sendMoneyOrRequest, setIsTenth, setAmount } from '../../redux/actions/App'
 
 const mapDispatchToProps = {
     fetchCards,
-    sendMoneyOrRequest
+    sendMoneyOrRequest,
+    setAmount, 
+    setIsTenth
 }
 
 const mapStateToProps = (state) => ({
@@ -21,13 +23,17 @@ const mapStateToProps = (state) => ({
 })
 
 class index extends Component {
-    static navigationOptions = ({ navigation }) => ({
+    static navigationOptions = ({navigation}) => ({
         headerStyle: {
             borderBottomWidth: 0,
         },
         headerLeft: (
             <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+                navigation.goBack()
+                navigation.state.params.setAmount(0);
+                navigation.state.params.setIsTenth(false);
+            }}
             >
                 <IconDos
                     name="arrow-left"
@@ -54,7 +60,19 @@ class index extends Component {
 
     componentDidMount() {
         this.props.fetchCards();
+        this.props.navigation.setParams({
+            setAmount: this.actionSetAmount,
+            setIsTenth: this.actionSetIsTenth
+          });
     }
+
+    actionSetAmount = (amount) => {
+        this.props.setAmount(amount); 
+    };
+
+    actionSetIsTenth = (boolean) => {
+        this.props.setIsTenth(boolean); 
+    };
 
     handleSubmitTransaction = (values) => {
         if (this.props.amount != 0) {
@@ -62,7 +80,8 @@ class index extends Component {
                 ...values,
                 senderEmail: this.props.user.email,
                 amount: this.props.amount,
-                date: new Date()
+                date: new Date(),
+                avatar: 'https://images.unsplash.com/photo-1489779162738-f81aed9b0a25?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=782&q=80'
             }
             this.props.sendMoneyOrRequest(transaction);
             this.props.navigation.goBack()

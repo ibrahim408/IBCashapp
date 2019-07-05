@@ -1,181 +1,126 @@
 import React, { Component } from 'react';
-import { View, Button, TextInput, StyleSheet, Text } from 'react-native';
-import { createCard, updateCards, fetchCards } from '../../redux/actions/App'
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button, FlatList } from 'react-native';
+import Icon from "react-native-vector-icons/AntDesign";
+import IconDos from "react-native-vector-icons/Feather";
+import color from '../../config/colors'
+import { fetchCards } from '../../redux/actions/App'
 import { connect } from "react-redux";
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import Valid from 'card-validator'
 
+let deviceWidth = Dimensions.get('window').width
+let deviceHeight = Dimensions.get('window').height
 
 const mapDispatchToProps = {
-    createCard,
-    updateCards,
-    fetchCards
+    fetchCards,
+
 }
 
-const mapStateToProps = ({ card }) => ({
-    cards: card.cards,
-    isCardFetched: card.isCardFetched,
+const mapStateToProps = (state) => ({
+    user: state.user.currentUser,
+    cards: state.card.cards,
+    isCardFetched: state.card.isCardFetched,
 })
 
 class Card extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerStyle: {
+            borderBottomWidth: 0,
+        },
+        headerLeft: (
+            <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
+                onPress={() => {
+                    navigation.goBack()
+                }}
+            >
+                <IconDos
+                    name="arrow-left"
+                    size={22}
+                    color={color.grey}
+                />
+            </TouchableOpacity>
+        ),
+        headerTitle: (
+            <Image style={{ width: 75, height: 75, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
+        ),
+        headerRight: (
+            <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
+                <Icon
+                    name="setting"
+                    size={22}
+                    color={color.grey}
+                />
+            </TouchableOpacity>
+        )
+    });
+
     state = {
-        activeCard: ''
+        activeCard: '',
+    };
+    componentDidMount() {
+        this.props.fetchCards();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.isCardFetched != this.props.isCardFetched) {
-            var active = this.props.cards.find((card) => {
+            var activeCard = this.props.cards.find((card) => {
                 return card.active == true;
             })
-            if (active) {
-                console.log('found active card');
-                this.setState({ activeCard: active })
+            if (activeCard) {
+                this.setState({ activeCard });
             }
         }
     }
 
-    handleCreateCard = (card) => {
-        console.log("will create: ", card)
-        // quick test to check if data is correct
-        // cuz 6/2019 pass
-        // add logic to handle different string format, specifically  number card
+    renderCards = (item, index) => {
+        let lastIndex = this.props.cards.length - 1;
+        let iconLabel;
+        if(index == lastIndex)
+            iconLabel = 'staro'
+        else
+            iconLabel = 'star'
 
-        this.props.createCard(card);
+            // <View style={[index != lastIndex ? styles.listColumnContainer :
+            //     {
+            //         ...styles.listColumnContainer,
+            //         borderBottomWidth: 0
+            //     }]}>
+        return (
+            <View style={styles.listColumnContainer}>
+                <View style={styles.creditCardContainer}>
+                    <View style={styles.iconContainer}>
+                        <Icon
+                            name={iconLabel}
+                            size={14}
+                            color={color.black}
+                        />
+                    </View>
+                </View>
+                <View style={{ marginLeft: 20 }}>
+                    <Text style={{ fontSize: 18 }}>9543
+                    </Text>
+                </View>
+            </View>
+        )
     }
-
-    handleUpdateCard = () => {
-        let updateCard = { ...this.props.cards[0], name: "ricky" };
-        console.log('card 1', updateCard);
-        this.props.updateCards(updateCard);
-    }
-
-    handleFetchCards = () => {
-        this.props.fetchCards();
-    }
-
     render() {
+        let emptyCard = [];
+        
         return (
             <View style={styles.container}>
-
-                <Formik
-                    initialValues={{ cardNumber: '', expMonth: '', expYear: '', cvv: '', postalCode: '' }}
-                    validationSchema={Yup.object({
-                        cardNumber: Yup.string()
-                        .required('Required')
-                        .test('test-card-number','invalid credit card number', value => Valid.number(value).isValid),
-                        expMonth: Yup.string()
-                        .required('Required')
-                        .test('test-exp-month','invalid exp-month',value => Valid.expirationMonth(value).isValid),
-                        expYear: Yup.string()
-                        .required('Required')
-                        .test('test-exp-year','invalid exp-year',value => Valid.expirationYear(value).isValid),                        
-                        cvv: Yup.string()
-                        .required('Required')
-                        .test('test-cvv','invalid cvv', value => Valid.cvv(value).isValid),
-                        postalCode: Yup.string()
-                        .required('Required')
-                        .test('test-postalCode','invalid postal code', value => Valid.postalCode(value).isValid),
-                    })}
-                    onSubmit={(values, formikActions) => {
-                        setTimeout(() => {
-                            this.handleCreateCard(values);
-                            formikActions.setSubmitting(false);
-                        }, 500);
-                    }}>
-                    {props => (
-                        <View>
-                            {this.state.logInErrorMessage &&
-                                <Text style={{ color: 'red' }}>
-                                    {this.state.logInErrorMessage}
-                                </Text>
-                            }
-                            <TextInput
-                                onChangeText={props.handleChange('cardNumber')}
-                                onBlur={props.handleBlur('cardNumber')}
-                                value={props.values.cardNumber}
-                                placeholder="credit card number"
-                                keyboardType='numeric'
-                                style={styles.input}
-                                autoFocus
-                                autoCapitalize="none"
-                                onSubmitEditing={() => {
-                                    this.lastNameInput.focus()
-                                }}
-                            />
-                            {props.touched.cardNumber && props.errors.cardNumber ? (
-                                <Text style={styles.error}>{props.errors.cardNumber}</Text>
-                            ) : null}
-                            <TextInput
-                                onChangeText={props.handleChange('expMonth')}
-                                onBlur={props.handleBlur('expMonth')}
-                                value={props.values.expMonth}
-                                placeholder="month / year"
-                                keyboardType='numeric'
-                                style={styles.input}
-                                autoCapitalize="none"
-                                ref={el => this.lastNameInput = el}
-                                onSubmitEditing={() => {
-                                    this.emailInput.focus()
-                                }}
-                            />
-                            {props.touched.expMonth && props.errors.expMonth ? (
-                                <Text style={styles.error}>{props.errors.expMonth}</Text>
-                            ) : null}
-                            <TextInput
-                                onChangeText={props.handleChange('expYear')}
-                                onBlur={props.handleBlur('expYear')}
-                                value={props.values.expYear}
-                                placeholder="year"
-                                keyboardType='numeric'
-                                style={styles.input}
-                                autoCapitalize="none"
-                                ref={el => this.lastNameInput = el}
-                                onSubmitEditing={() => {
-                                    this.emailInput.focus()
-                                }}
-                            />
-                            {props.touched.expYear && props.errors.expYear ? (
-                                <Text style={styles.error}>{props.errors.expYear}</Text>
-                            ) : null}                            
-                            <TextInput
-                                onChangeText={props.handleChange('cvv')}
-                                onBlur={props.handleBlur('cvv')}
-                                value={props.values.cvv}
-                                placeholder="cvv"
-                                keyboardType='numeric'
-                                autoCapitalize="none"
-                                style={styles.input}
-                                ref={el => this.passwordInput = el}
-                            />
-                            {props.touched.cvv && props.errors.cvv ? (
-                                <Text style={styles.error}>{props.errors.cvv}</Text>
-                            ) : null}
-                            <TextInput
-                                onChangeText={props.handleChange('postalCode')}
-                                onBlur={props.handleBlur('postalCode')}
-                                value={props.values.postalCode}
-                                placeholder="postal code"
-                                autoCapitalize="none"
-                                keyboardType='numeric'
-                                style={styles.input}
-                                ref={el => this.passwordInput = el}
-                            />
-                            {props.touched.postalCode && props.errors.postalCode ? (
-                                <Text style={styles.error}>{props.errors.postalCode}</Text>
-                            ) : null}                            
-                            <Button
-                                title="Submit"
-                                onPress={props.handleSubmit}
-                                color="black"
-                                mode="contained"
-                                loading={props.isSubmitting}
-                                disabled={props.isSubmitting}
-                            />
-                        </View>
-                    )}
-                </Formik>
-
+                <View style={styles.cardLabel}>
+                    <Text style={{ color: color.grey, fontSize: 16 }}>cards
+                    </Text>
+                </View>
+                <View style={styles.listContainer}>
+                    <FlatList
+                        data={emptyCard}
+                        renderItem={({ item, index }) => this.renderCards(item, index)}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                </View>
+                <View style={styles.addCardContainer}>
+                    <View style={{marginHorizontal: deviceWidth / 20}}>
+                    </View>
+                </View>
             </View>
         );
     }
@@ -184,31 +129,42 @@ class Card extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 200,
-        backgroundColor: '#ecf0f1',
-        padding: 8,
+        backgroundColor: color.white
     },
-    title: {
-        margin: 24,
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
+    cardLabel: {
+        marginTop: 50,
+        marginLeft: 20,
+        marginBottom: 10
     },
-    error: {
-        margin: 8,
-        fontSize: 14,
-        color: 'red',
-        fontWeight: 'bold',
+    listContainer: {
+        backgroundColor: color.tanbackGround
     },
-    input: {
-        height: 50,
-        paddingHorizontal: 8,
-        width: '100%',
-        borderColor: '#ddd',
-        borderWidth: 1,
-        backgroundColor: '#fff',
+    listColumnContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 55,
+        borderBottomWidth: .25,
+        borderBottomColor: color.grey,
+        marginHorizontal: deviceWidth / 20,
     },
-  });
-  
+    creditCardContainer: {
+        height: 25,
+        width: 38,
+        borderRadius: 3,
+        borderColor: color.black,
+        borderWidth: .2,
+        backgroundColor: color.white
+    },
+    iconContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    addCardContainer: {
+        height: 55,
+        backgroundColor: color.tanbackGround
+    }
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Card);

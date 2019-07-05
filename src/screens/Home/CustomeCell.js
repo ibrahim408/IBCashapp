@@ -7,7 +7,6 @@ let deviceHeight = Dimensions.get('window').height
 class CustomeCell extends Component {
     state = {}
     render() {
-        console.log(this.props.date)
         return (
             <View style={styles.container}>
                 <View style={styles.avatarContainer}>

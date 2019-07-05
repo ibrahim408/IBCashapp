@@ -4,7 +4,6 @@ import color from '../../config/colors'
 import { fetchCards, logOut } from '../../redux/actions/App'
 import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/AntDesign";
-import IconDos from "react-native-vector-icons/Feather";
 import ActivitiesList from './ActivitiesList'
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
@@ -21,14 +20,16 @@ const mapStateToProps = (state) => ({
 })
 
 class Home extends Component {
-  static navigationOptions = {
+  static navigationOptions = ({navigation}) => ({
     headerStyle: {
       borderBottomWidth: 0,
     },
     headerLeft: (
-      <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}>
-        <IconDos
-          name="bell"
+      <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
+      onPress={() => navigation.navigate('Card')}
+      >
+        <Icon
+          name="creditcard"
           size={22}
           color={color.black}
         />
@@ -46,7 +47,7 @@ class Home extends Component {
         />
       </TouchableOpacity>
     )
-  };
+  });
 
   state = {
     activeCard: '',
@@ -94,7 +95,6 @@ class Home extends Component {
   }
 
   onLayoutEvent = (event) => {
-    console.log("top: ", event.nativeEvent.layout.height);
     this.setState({ cardtopPosition: event.nativeEvent.layout.height / 4 });
   }
 
