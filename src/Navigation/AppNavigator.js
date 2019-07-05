@@ -4,6 +4,7 @@ import Loading from '../screens/Loading';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import Card from '../screens/Card'
+import AddCard from '../screens/AddCard'
 import Send from '../screens/Send'
 
 const AppNavigator = createStackNavigator(
@@ -31,6 +32,9 @@ const AppNavigator = createStackNavigator(
     },
     Card: {
       screen: Card
+    },
+    AddCard: {
+      screen: AddCard
     },
     Send: {
       screen: Send

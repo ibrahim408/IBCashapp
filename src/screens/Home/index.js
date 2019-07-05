@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image }
 import color from '../../config/colors'
 import { fetchCards, logOut } from '../../redux/actions/App'
 import { connect } from "react-redux";
+import { firestoreConnect } from 'react-redux-firebase'
+import { compose } from 'redux'
 import Icon from "react-native-vector-icons/AntDesign";
 import ActivitiesList from './ActivitiesList'
 let deviceWidth = Dimensions.get('window').width
@@ -214,5 +216,10 @@ const styles = StyleSheet.create({
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
-
+// export default compose(
+//   connect(mapStateToProps, mapDispatchToProps),
+//   firestoreConnect([
+//    { collection: 'transactions'}
+//   ])
+//  )(Home)
 

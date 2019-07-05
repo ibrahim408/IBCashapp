@@ -73,16 +73,16 @@ class Card extends Component {
     renderCards = (item, index) => {
         let lastIndex = this.props.cards.length - 1;
         let iconLabel;
-        if(index == lastIndex)
+        if (index == lastIndex)
             iconLabel = 'staro'
         else
             iconLabel = 'star'
 
-            // <View style={[index != lastIndex ? styles.listColumnContainer :
-            //     {
-            //         ...styles.listColumnContainer,
-            //         borderBottomWidth: 0
-            //     }]}>
+        // <View style={[index != lastIndex ? styles.listColumnContainer :
+        //     {
+        //         ...styles.listColumnContainer,
+        //         borderBottomWidth: 0
+        //     }]}>
         return (
             <View style={styles.listColumnContainer}>
                 <View style={styles.creditCardContainer}>
@@ -101,9 +101,28 @@ class Card extends Component {
             </View>
         )
     }
+
+    renderAddCard = () => {
+        return (
+            <View style={styles.addCardInnerContainer}>
+                <View style={styles.creditCardContainer}>
+                    <View style={styles.iconContainer}>
+                        <Icon
+                            name='plus'
+                            size={14}
+                            color={color.black}
+                        />
+                    </View>
+                </View>
+                <View style={{ marginLeft: 20 }}>
+                    <Text style={{ fontSize: 18 }}>Add Credit Card
+                    </Text>
+                </View>
+            </View>
+        )
+    }
+
     render() {
-        let emptyCard = [];
-        
         return (
             <View style={styles.container}>
                 <View style={styles.cardLabel}>
@@ -112,15 +131,16 @@ class Card extends Component {
                 </View>
                 <View style={styles.listContainer}>
                     <FlatList
-                        data={emptyCard}
+                        data={this.props.cards}
                         renderItem={({ item, index }) => this.renderCards(item, index)}
                         keyExtractor={(item, index) => index.toString()}
                     />
                 </View>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('AddCard')}>
                 <View style={styles.addCardContainer}>
-                    <View style={{marginHorizontal: deviceWidth / 20}}>
-                    </View>
+                    {this.renderAddCard()}
                 </View>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -164,6 +184,12 @@ const styles = StyleSheet.create({
     addCardContainer: {
         height: 55,
         backgroundColor: color.tanbackGround
+    },
+    addCardInnerContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: deviceWidth / 20,
     }
 })
 
