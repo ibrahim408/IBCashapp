@@ -22,13 +22,13 @@ const mapStateToProps = (state) => ({
 })
 
 class Home extends Component {
-  static navigationOptions = ({navigation}) => ({
+  static navigationOptions = ({ navigation }) => ({
     headerStyle: {
       borderBottomWidth: 0,
     },
     headerLeft: (
       <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
-      onPress={() => navigation.navigate('Card')}
+        onPress={() => navigation.navigate('Card')}
       >
         <Icon
           name="creditcard"
@@ -38,7 +38,7 @@ class Home extends Component {
       </TouchableOpacity>
     ),
     headerTitle: (
-      <Image style={{ width: 75, height: 75, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
+      <Image style={{ width: 75, height: 75  }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
     ),
     headerRight: (
       <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
@@ -75,21 +75,25 @@ class Home extends Component {
     }
   }
 
-  setActiveCard(active){
+  setActiveCard(active) {
     let last4Digits = active.cardNumber.toString().substr(active.cardNumber.toString().length - 4);
     let expMonth = active.expMonth;
     let expYear;
 
-    if(active.expYear > 2000){
-      expYear = active.expYear - 2000
-    }
-    this.setState({ 
-      activeCard: active, 
+    if (parseInt(active.expYear) > 2000)
+      expYear = parseInt(active.expYear) - 2000;
+    else
+      expYear = parseInt(active.expYear);
+
+
+
+    this.setState({
+      activeCard: active,
       last4Digits: last4Digits,
       expMonth: expMonth,
       expYear: expYear,
       type: active.type
-    })    
+    })
   }
 
   handleLogOut = () => {
@@ -125,7 +129,7 @@ class Home extends Component {
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginRight: deviceWidth / 18 }}>
                 <Text style={{ color: color.white, fontSize: 20 }}>{this.state.expMonth}/{this.state.expYear}
                 </Text>
-                <Text style={{ color: color.white }}>{this.state.type}
+                <Text style={{ fontSize: 20, fontWeight: 'bold',color: color.white }}>{this.state.type}
                 </Text>
               </View>
             </View>
@@ -146,7 +150,7 @@ class Home extends Component {
           </View>
           <View style={styles.transactionButtonContainer}>
             <TouchableOpacity style={styles.buttonStyle}
-            onPress={() => this.props.navigation.navigate("Send")}>
+              onPress={() => this.props.navigation.navigate("Send")}>
               <Icon
                 name="pluscircleo"
                 size={20}
@@ -155,7 +159,7 @@ class Home extends Component {
             </TouchableOpacity>
           </View>
         </View>
-        <ActivitiesList navigation={this.props.navigation}/>
+        <ActivitiesList  disable={false} navigation={this.props.navigation} />
       </View >
     );
   }

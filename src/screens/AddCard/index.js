@@ -54,8 +54,8 @@ class AddCard extends Component {
     // cuz 6/2019 pass
     // add logic to handle different string format, specifically  number card
     handleCreateCard = (card) => {
-        let willCreate = { ...card, active: false }
-        this.props.createCard(card);
+        let willCreate = { ...card, active: false, type: 'Visa' }
+        this.props.createCard(willCreate);
         this.props.fetchCards();
         this.props.navigation.goBack()
     }

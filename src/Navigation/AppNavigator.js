@@ -7,6 +7,7 @@ import Card from '../screens/Card'
 import AddCard from '../screens/AddCard'
 import Send from '../screens/Send'
 import AcceptRequest from '../screens/AcceptRequest'
+import FullList from '../screens/Home/FullList'
 
 const AppNavigator = createStackNavigator(
   {
@@ -42,6 +43,9 @@ const AppNavigator = createStackNavigator(
     },
     AcceptRequest: {
       screen: AcceptRequest
+    },
+    FullList: {
+      screen: FullList
     }
   },
   {

@@ -12,10 +12,10 @@ let deviceHeight = Dimensions.get('window').height
 
 
 const mapDispatchToProps = {
-    setAmount, 
+    setAmount,
     setIsTenth
 }
-const mapStateToProps = ({transactions}) => ({
+const mapStateToProps = ({ transactions }) => ({
     amount: transactions.amount,
     isTenth: transactions.isTenth
 })
@@ -28,25 +28,28 @@ class Keypad extends Component {
     }
 
     onPress0 = () => {
-        const amount = this.state.transactionAmount;
+        const amount = this.props.amount
         let decimalPlace = (amount.toString().split('.')[1] || []).length;
 
         if (amount != 0 && decimalPlace < 2) {
-            if (this.state.isTenth == false) {
+            if (this.props.isTenth == false) {
                 if (parseFloat(amount) % 1 == 0) {
-                    this.setState({ transactionAmount: parseFloat(amount).toFixed(2) })
+                    if(typeof(amount)=='string')
+                        this.props.setAmount(parseFloat(amount).toFixed(2))
+                    else 
+                        this.props.setAmount(parseFloat(amount.toString() + '0'))
                 } else {
-                    this.setState({ transactionAmount: parseFloat(amount.toString() + '0') })
+                    console.log('it does get callled');
+                    this.props.setAmount(parseFloat(amount).toFixed(2))
                 }
             } else {
-                this.setState({
-                    transactionAmount: amount.toFixed(1),
-                    isTenth: false
-                })
+                this.props.setAmount(amount.toFixed(1));
+                this.props.setIsTenth(false)
             }
 
         }
     }
+
     onDigitPress = (number) => {
         let numberDecimal = number / 10;
         const amount = this.props.amount

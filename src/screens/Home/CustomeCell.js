@@ -1,18 +1,28 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity, Dimensions, Text, Image } from 'react-native';
+import { connect } from "react-redux";
 import color from '../../config/colors'
 
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
+
+const mapStateToProps = ({ user }) => ({
+    user: user.currentUser,
+})
+
 class CustomeCell extends Component {
     state = {}
-    renderAmount = (type, amount) => {
+    renderAmount = (type, action, amount, senderEmail) => {
         if (type == "received")
             return <Text style={{ fontSize: 20, color: color.green }}>+ ${amount}</Text>
         else if (type == "pay")
             return <Text style={{ fontSize: 20, color: color.moneysent }}>- ${amount}</Text>
+        else if (type == "request" && action == "decline")
+            return <Text style={{ fontSize: 20, color: color.grey, textDecorationLine: 'line-through' }}> ${amount}</Text>
+        else if (type == "request" && senderEmail == this.props.user.email)
+            return <Text style={{ fontSize: 20, color: color.grey }}>pending ${amount}</Text>
         else
-            return <Text style={{ fontSize: 20, color: color.grey }}> ${amount}</Text>
+            return <Text style={{ fontSize: 20, color: color.grey }}>accept ${amount}</Text>
 
     }
     // {this.props.type == "received" ? (
@@ -20,19 +30,30 @@ class CustomeCell extends Component {
     // ) : <Text style={{ fontSize: 20, color: color.moneysent }}>- ${this.props.amount}</Text>
     // }
     render() {
+        let avatarColor = this.props.color;
+        let firstCharOfName = this.props.senderName.charAt(0).toUpperCase();
         let disabled = true;
-        if (this.props.type == "request")
+
+        if (this.props.type == "request" && this.props.senderEmail != this.props.user.email)
             disabled = false;
+        if (disabled == false && this.props.action == "decline")
+            disabled = true
 
         return (
             <TouchableOpacity disabled={disabled} onPress={() => this.props.navigation.navigate('AcceptRequest', {
-                from: this.props.from,
+                from: this.props.senderName,
+                senderEmail: this.props.senderEmail,
+                recieverEmail: this.props.recieverEmail,
                 amount: this.props.amount,
                 id: this.props.id,
             })}>
                 <View style={styles.container}>
                     <View style={styles.avatarContainer}>
-                        <Image source={{ uri: this.props.avatar }} style={styles.avatar} />
+                        <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
+                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={{color: color.white,fontSize: 16, fontWeight: 'bold'}}>{firstCharOfName}</Text>
+                            </View>
+                        </View>
                     </View>
                     <View style={styles.detailContainer}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -41,7 +62,7 @@ class CustomeCell extends Component {
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                             <Text style={{ fontSize: 14, color: color.grey }}>{this.props.description}</Text>
-                            {this.renderAmount(this.props.type, this.props.amount)}
+                            {this.renderAmount(this.props.type, this.props.action, this.props.amount, this.props.senderEmail)}
                         </View>
                     </View>
                 </View>
@@ -51,7 +72,7 @@ class CustomeCell extends Component {
 }
 
 
-
+// <Image source={{ uri: this.props.avatar }} style={styles.avatar} />
 
 const styles = StyleSheet.create({
     container: {
@@ -80,5 +101,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     }
 })
-export default CustomeCell;
+
+export default connect(mapStateToProps, null)(CustomeCell);
+
 

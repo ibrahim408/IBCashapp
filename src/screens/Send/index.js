@@ -7,10 +7,11 @@ import Keypad from './Keypad'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from "react-redux";
-import { fetchCards, sendMoneyOrRequest, setIsTenth, setAmount } from '../../redux/actions/App'
+import { fetchCards, fetchTransactions, sendMoneyOrRequest, setIsTenth, setAmount } from '../../redux/actions/App'
 
 const mapDispatchToProps = {
     fetchCards,
+    fetchTransactions,
     sendMoneyOrRequest,
     setAmount, 
     setIsTenth
@@ -79,11 +80,13 @@ class index extends Component {
             let transaction = {
                 ...values,
                 senderEmail: this.props.user.email,
+                senderName: this.props.user.firstName + " " + this.props.user.lastName,
                 amount: this.props.amount,
                 date: new Date(),
-                avatar: 'https://images.unsplash.com/photo-1489779162738-f81aed9b0a25?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=782&q=80'
+                action: 'pending',
             }
             this.props.sendMoneyOrRequest(transaction);
+            this.props.fetchTransactions();
             this.props.navigation.goBack()
         }
     }

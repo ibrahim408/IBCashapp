@@ -20,6 +20,7 @@ class ActivitiesList extends Component {
         this.props.fetchTransactions()
     }
     render() {
+        let avatarColors = [color.livingCoral,color.ultraViolet,color.peachPink,color.blueStone];
         return (
             <View style={styles.bottomContainer}>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginTop: 10, }}>
@@ -27,24 +28,32 @@ class ActivitiesList extends Component {
                         <Text style={{ fontSize: 20 }}>Activity</Text>
                     </View>
                     <View style={{ marginTop: 5 }}>
-                        <TouchableOpacity style={styles.activityButtonStyle}>
+                        {this.props.disable ? null : <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('FullList')}
+                            style={styles.activityButtonStyle}
+                        >
                             <Text style={[{ fontSize: 10, color: color.activityButtonTextColor }]}>see all
-                  </Text>
+                            </Text>
                         </TouchableOpacity>
+                        }
                     </View>
                 </View>
                 <View style={{ flex: 1, marginTop: 5 }}>
                     <FlatList
                         data={this.props.transactions}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => <CustomeCell
+                        renderItem={({ item,index }) => <CustomeCell
                             navigation={this.props.navigation}
                             avatar={item.avatar}
-                            from={item.recieverName}
+                            senderName={item.senderName}
+                            senderEmail={item.senderEmail}
+                            recieverEmail={item.recieverEmail}
                             type={item.type}
+                            action={item.action}
                             description={item.description}
                             amount={item.amount}
                             id={item.id}
+                            color={avatarColors[index % avatarColors.length]}
                             date3={Date(item.seconds)}
                             date={{
                                 day: new Date(Date(item.seconds)).getDay(),

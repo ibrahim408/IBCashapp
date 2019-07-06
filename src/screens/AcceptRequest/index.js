@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button, FlatList } from 'react-native';
+import { acceptRequest, declineRequest, fetchTransactions } from '../../redux/actions/App'
+import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
+
+const mapDispatchToProps = {
+    acceptRequest,
+    declineRequest,
+    fetchTransactions
+}
 
 class AcceptRequest extends Component {
     static navigationOptions = ({ navigation }) => ({
@@ -36,21 +44,23 @@ class AcceptRequest extends Component {
         )
     });
     state = {}
-    handleAction = (id) => {
-        let updateTransaction;
-
-        // updateTransaction = this.props.transaction.find( id == id) 
-        // type: request, result: decline
-        // type: pay, reciever: sender, sender: reciever
-        // this.props.updateTransaction(updateTransaction)
-        // navigation.goback();
+    handleActionDecline = (id) => {
+        this.props.declineRequest(id);
+        this.props.fetchTransactions();
+        this.props.navigation.goBack()
+    }
+    handleActionAccept = (id,senderEmail,recieverEmail) => {
+        this.props.acceptRequest(id,senderEmail,recieverEmail);
+        this.props.fetchTransactions();
+        this.props.navigation.goBack()
     }
     render() {
         const { navigation } = this.props;
         const from = navigation.getParam('from', 'NO-ID');
         const amount = navigation.getParam('amount', 'some default value');
         const id = navigation.getParam('id', 'no id');
-        console.log(' the id is: ', id);
+        const senderEmail = navigation.getParam('senderEmail', 'no senderEmail');
+        const recieverEmail = navigation.getParam('recieverEmail', 'no recieverEmail');
 
         return (
             <View style={styles.container}>
@@ -63,10 +73,14 @@ class AcceptRequest extends Component {
                     <Text style={{fontSize: 100, color: color.bluecard}}>${amount} </Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity style={[styles.actionButton, styles.declineButton]}>
+                    <TouchableOpacity 
+                    onPress={() => this.handleActionDecline(id)} 
+                    style={[styles.actionButton, styles.declineButton]}>
                         <Text style={{fontSize: 20, color: color.white}}>decline</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.actionButton, styles.acceptButton]}>
+                    <TouchableOpacity 
+                    onPress={() => this.handleActionAccept(id,senderEmail,recieverEmail)}
+                    style={[styles.actionButton, styles.acceptButton]}>
                         <Text style={{fontSize: 20, color: color.white}}>accept</Text>
                     </TouchableOpacity>
                 </View>
@@ -105,4 +119,5 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 12,
     }
 })
-export default AcceptRequest;
+
+export default connect(null, mapDispatchToProps)(AcceptRequest);

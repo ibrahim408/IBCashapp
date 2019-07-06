@@ -11,6 +11,10 @@ const colors = {
     black: 'black',    
     white: 'white',
     blue: 'blue',   
-    green: '#86C84A' 
+    green: '#86C84A',
+    livingCoral: '#FF6F61',
+    ultraViolet: '#6B5B95',
+    peachPink: '#FA9A85',
+    blueStone: '#577284',
   };
  export default colors;

@@ -167,17 +167,21 @@ sendRequestMoney
 acceptRequest
 *////////////////////////////////////////////////////
 
-export const fetchTransactions = () => dispatch => {
-    const docRef = Firebase.firestore().collection(C.TRANSACTIONS);
+export const fetchTransactions = () => (dispatch,getState) => {
+    let currentUser = getState().user.currentUser;
+    const docRef = Firebase.firestore().collection(C.TRANSACTIONS).orderBy("date",'desc');
     docRef.get()
         .then(snapshot => {
             let transactions = snapshot.docs.map(doc => {
                 return { ...doc.data(), id: doc.id };
             });
-
+            let filterTransactions = transactions.filter((transaction) => {
+                return (transaction.recieverEmail == currentUser.email) || (transaction.senderEmail == currentUser.email) 
+            })
+            console.log('transsssss: ',filterTransactions);
             dispatch({
                 type: C.FETCH_TRANSACTIONS,
-                payload: transactions
+                payload: filterTransactions
             })
         }).catch(function (error) {
             console.log("got an error", error);
@@ -194,12 +198,30 @@ export const sendMoneyOrRequest = (transaction) => dispatch => {
         .catch(error => console.log("ERROR :", error))
 }
 
-export const acceptRequest = (transaction) => dispatch => {
-    Firebase.firestore().collection(C.TRANSACTIONS).doc(transaction.id)
+export const acceptRequest = (id,senderEmail,recieverEmail) => dispatch => {
+    Firebase.firestore().collection(C.TRANSACTIONS).doc(id)
         .update({
-            type: 'send',
-            reciever: transaction.sender,
-            sender: transaction.reciever
+            type: 'pay',
+            action: 'accept',
+            recieverEmail: senderEmail,
+            senderEmail: recieverEmail,
+            date: new Date(),
+        })
+        .then(() => {
+            dispatch({
+                type: C.ACCEPT_REQUEST
+            })
+        })
+        .catch(function (error) {
+            console.error("error des", error);
+        });    
+}
+
+export const declineRequest = (id) => dispatch => {
+    Firebase.firestore().collection(C.TRANSACTIONS).doc(id)
+        .update({
+            action: 'decline',
+            date: new Date(),
         })
         .then(() => {
             dispatch({
