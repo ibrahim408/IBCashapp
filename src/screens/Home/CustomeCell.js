@@ -25,10 +25,6 @@ class CustomeCell extends Component {
             return <Text style={{ fontSize: 20, color: color.grey }}>accept ${amount}</Text>
 
     }
-    // {this.props.type == "received" ? (
-    //     <Text style={{ fontSize: 20, color: color.green }}>+ ${this.props.amount}</Text>
-    // ) : <Text style={{ fontSize: 20, color: color.moneysent }}>- ${this.props.amount}</Text>
-    // }
     render() {
         let avatarColor = this.props.color;
         let firstCharOfName = this.props.senderName.charAt(0).toUpperCase();

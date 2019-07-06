@@ -42,6 +42,7 @@ class ActivitiesList extends Component {
                     <FlatList
                         data={this.props.transactions}
                         keyExtractor={(item, index) => index.toString()}
+                        scrollEnabled={this.props.disable}
                         renderItem={({ item,index }) => <CustomeCell
                             navigation={this.props.navigation}
                             avatar={item.avatar}

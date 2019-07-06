@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image, Alert } from 'react-native'
 import color from '../../config/colors'
 import { fetchCards, logOut } from '../../redux/actions/App'
 import { connect } from "react-redux";
@@ -38,7 +38,7 @@ class Home extends Component {
       </TouchableOpacity>
     ),
     headerTitle: (
-      <Image style={{ width: 75, height: 75  }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
+      <Image style={{ width: 75, height: 75 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
     ),
     headerRight: (
       <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
@@ -104,6 +104,18 @@ class Home extends Component {
     this.setState({ cardtopPosition: event.nativeEvent.layout.height / 4 });
   }
 
+  fireAlert = () => {
+    Alert.alert(
+      '',
+      'Set a default Card to use',
+      [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        { text: 'OK', onPress: () => this.props.navigation.navigate('Card') },
+      ],
+      { cancelable: false }
+    )
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -129,7 +141,7 @@ class Home extends Component {
               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginRight: deviceWidth / 18 }}>
                 <Text style={{ color: color.white, fontSize: 20 }}>{this.state.expMonth}/{this.state.expYear}
                 </Text>
-                <Text style={{ fontSize: 20, fontWeight: 'bold',color: color.white }}>{this.state.type}
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: color.white }}>{this.state.type}
                 </Text>
               </View>
             </View>
@@ -150,7 +162,12 @@ class Home extends Component {
           </View>
           <View style={styles.transactionButtonContainer}>
             <TouchableOpacity style={styles.buttonStyle}
-              onPress={() => this.props.navigation.navigate("Send")}>
+              onPress={() => {
+                if (this.state.activeCard != "")
+                  this.props.navigation.navigate("Send")
+                else
+                  this.fireAlert();
+              }}>
               <Icon
                 name="pluscircleo"
                 size={20}
@@ -159,7 +176,7 @@ class Home extends Component {
             </TouchableOpacity>
           </View>
         </View>
-        <ActivitiesList  disable={false} navigation={this.props.navigation} />
+        <ActivitiesList disable={false} navigation={this.props.navigation} />
       </View >
     );
   }

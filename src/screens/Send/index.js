@@ -75,7 +75,7 @@ class index extends Component {
         this.props.setIsTenth(boolean); 
     };
 
-    handleSubmitTransaction = (values) => {
+    handleSubmitTransaction = (values) => {        
         if (this.props.amount != 0) {
             let transaction = {
                 ...values,
