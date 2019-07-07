@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { firestoreConnect } from 'react-redux-firebase'
 import { compose } from 'redux'
 import Icon from "react-native-vector-icons/AntDesign";
+import IconDos from "react-native-vector-icons/MaterialCommunityIcons";
 import ActivitiesList from './ActivitiesList'
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
@@ -49,8 +50,8 @@ class Home extends Component {
           navigation.navigate('Loading');
         }}
       >
-        <Icon
-          name="setting"
+        <IconDos
+          name="logout"
           size={22}
           color={color.black}
         />
