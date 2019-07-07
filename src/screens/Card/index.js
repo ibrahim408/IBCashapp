@@ -40,15 +40,6 @@ class Card extends Component {
         ),
         headerTitle: (
             <Image style={{ width: 75, height: 75, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
-        ),
-        headerRight: (
-            <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
-                <Icon
-                    name="setting"
-                    size={22}
-                    color={color.grey}
-                />
-            </TouchableOpacity>
         )
     });
 
@@ -70,9 +61,11 @@ class Card extends Component {
         }
     }
     handlePressMakeDefault = (newActiveCard) => {
-        let resetOldActiveCard = {...this.state.activeCard, active: false}
+        if(this.state.activeCard != ''){
+            let resetOldActiveCard = {...this.state.activeCard, active: false}
+            this.props.updateCard(resetOldActiveCard);
+        }
         let setNewActiveCard = {...newActiveCard, active: true}
-        this.props.updateCard(resetOldActiveCard);
         this.props.updateCard(setNewActiveCard);
         this.props.fetchCards();
     }

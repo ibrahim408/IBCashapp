@@ -49,8 +49,8 @@ class AcceptRequest extends Component {
         this.props.fetchTransactions();
         this.props.navigation.goBack()
     }
-    handleActionAccept = (id,senderEmail,recieverEmail) => {
-        this.props.acceptRequest(id,senderEmail,recieverEmail);
+    handleActionAccept = (id,senderEmail,recieverEmail,amount) => {
+        this.props.acceptRequest(id,senderEmail,recieverEmail,amount);
         this.props.fetchTransactions();
         this.props.navigation.goBack()
     }
@@ -79,7 +79,7 @@ class AcceptRequest extends Component {
                         <Text style={{fontSize: 20, color: color.white}}>decline</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                    onPress={() => this.handleActionAccept(id,senderEmail,recieverEmail)}
+                    onPress={() => this.handleActionAccept(id,senderEmail,recieverEmail,amount)}
                     style={[styles.actionButton, styles.acceptButton]}>
                         <Text style={{fontSize: 20, color: color.white}}>accept</Text>
                     </TouchableOpacity>

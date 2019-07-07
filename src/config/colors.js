@@ -16,5 +16,6 @@ const colors = {
     ultraViolet: '#6B5B95',
     peachPink: '#FA9A85',
     blueStone: '#577284',
+    lightGrey: '#E7E7EF',
   };
  export default colors;

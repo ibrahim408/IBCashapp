@@ -13,7 +13,7 @@ export const fetchUserDetails = (uid) => dispatch => {
         .get().then(res => {
             dispatch({
                 type: C.FETCH_USER_DETAILS,
-                payload: res.data()
+                payload: { ...res.data(), id: res.id }
             })
         }).catch((e) => console.log('ERROR: ', e))
 }
@@ -51,7 +51,8 @@ export const signUp = (firstName, lastName, email, password) => dispatch => {
             Firebase.firestore().collection(C.USERS).doc(uid).set({
                 firstName: firstName,
                 lastName: lastName,
-                email: email
+                email: email,
+                balance: 0,
             }).catch(error => console.log("ERROR :", error))
         })
         .then(() => {
@@ -91,9 +92,10 @@ getCards
 updateCards
 *////////////////////////////////////////////////////
 
-export const createCard = (card) => dispatch => {
-
-    Firebase.firestore().collection(C.CARDS).add(card)
+export const createCard = (card) => (dispatch, getState) => {
+    let currentUser = getState().user.currentUser;
+    let cardWithID = { ...card, userID: currentUser.id }
+    Firebase.firestore().collection(C.CARDS).add(cardWithID)
         .then(() => {
             dispatch({
                 type: C.CREATE_CARD,
@@ -115,8 +117,9 @@ export const updateCard = (cardUpdates) => dispatch => {
         });
 }
 
-export const fetchCards = () => dispatch => {
-    const docRef = Firebase.firestore().collection(C.CARDS);
+export const fetchCards = () => (dispatch, getState) => {
+    let currentUser = getState().user.currentUser;
+    const docRef = Firebase.firestore().collection(C.CARDS).where('userID', '==', currentUser.id);
     docRef.get()
         .then(snapshot => {
             let cards = snapshot.docs.map(doc => {
@@ -188,7 +191,7 @@ export const fetchTransactions = () => (dispatch, getState) => {
         })
 }
 
-export const sendMoneyOrRequest = (transaction) =>  dispatch => {
+export const sendMoneyOrRequest = (transaction) => dispatch => {
     this.updateRecieverBalance(transaction);
     Firebase.firestore().collection(C.TRANSACTIONS).add(transaction)
         .then((ref) => {
@@ -200,7 +203,14 @@ export const sendMoneyOrRequest = (transaction) =>  dispatch => {
 }
 
 
-export const acceptRequest = (id, senderEmail, recieverEmail) => dispatch => {
+export const acceptRequest = (id, senderEmail, recieverEmail, amount) => dispatch => {
+    let transaction = {
+        type: 'pay',
+        recieverEmail: senderEmail,
+        amount: amount,
+    };
+    this.updateRecieverBalance(transaction);
+
     Firebase.firestore().collection(C.TRANSACTIONS).doc(id)
         .update({
             type: 'pay',
@@ -219,7 +229,8 @@ export const acceptRequest = (id, senderEmail, recieverEmail) => dispatch => {
         });
 }
 
-updateRecieverBalance = (transaction) =>{ 
+updateRecieverBalance = (transaction) => {
+
     if (transaction.type == 'pay') {
         var user;
         Firebase.firestore().collection(C.USERS)
@@ -231,11 +242,16 @@ updateRecieverBalance = (transaction) =>{
                 })
             })
             .then(() => {
+                console.log('here here quatro');
                 Firebase.firestore().collection(C.USERS).doc(user[0].id)
                     .update({
                         balance: user[0].balance + transaction.amount
                     })
-                    .then(() => {
+                    .then(() =>
+                    {
+                        console.log('here here cinco');
+                        console.log(user[0].balance);
+                        console.log( transaction.amount);
 
                     })
                     .catch(() => console.error("error des", error));

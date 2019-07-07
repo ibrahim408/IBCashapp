@@ -27,7 +27,8 @@ class Home extends Component {
       borderBottomWidth: 0,
     },
     headerLeft: (
-      <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
+      <TouchableOpacity
+        style={{ backgroundColor: 'transparent', marginLeft: 10 }}
         onPress={() => navigation.navigate('Card')}
       >
         <Icon
@@ -41,7 +42,13 @@ class Home extends Component {
       <Image style={{ width: 75, height: 75 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
     ),
     headerRight: (
-      <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
+      <TouchableOpacity
+        style={{ backgroundColor: 'transparent', marginRight: 10 }}
+        onPress={async () => {
+          await navigation.state.params.logOut();
+          navigation.navigate('Loading');
+        }}
+      >
         <Icon
           name="setting"
           size={22}
@@ -62,6 +69,9 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.fetchCards();
+    this.props.navigation.setParams({
+      logOut: this.actionLogOut,
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -74,6 +84,10 @@ class Home extends Component {
       }
     }
   }
+
+  actionLogOut = () => {
+    this.props.logOut();
+  };
 
   setActiveCard(active) {
     let last4Digits = active.cardNumber.toString().substr(active.cardNumber.toString().length - 4);

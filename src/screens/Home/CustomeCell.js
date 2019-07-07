@@ -15,6 +15,8 @@ class CustomeCell extends Component {
     renderAmount = (type, action, amount, senderEmail) => {
         if (type == "received")
             return <Text style={{ fontSize: 20, color: color.green }}>+ ${amount}</Text>
+        else if (type == "pay" && senderEmail != this.props.user.email)
+            return <Text style={{ fontSize: 20, color: color.green }}>+ ${amount}</Text>
         else if (type == "pay")
             return <Text style={{ fontSize: 20, color: color.moneysent }}>- ${amount}</Text>
         else if (type == "request" && action == "decline")
@@ -46,8 +48,8 @@ class CustomeCell extends Component {
                 <View style={styles.container}>
                     <View style={styles.avatarContainer}>
                         <View style={[styles.avatar, { backgroundColor: avatarColor }]}>
-                            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={{color: color.white,fontSize: 16, fontWeight: 'bold'}}>{firstCharOfName}</Text>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: color.white, fontSize: 16, fontWeight: 'bold' }}>{firstCharOfName}</Text>
                             </View>
                         </View>
                     </View>

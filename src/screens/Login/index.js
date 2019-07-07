@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, Button, Image, TouchableOpacity } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { logIn } from '../../redux/actions/App'
 import { connect } from "react-redux";
+import color from '../../config/colors'
 
 const mapDispatchToProps = {
     logIn,
@@ -37,28 +38,35 @@ class Login extends Component {
     passwordInput = null;
     render() {
         return (
-            <View style={styles.container}>
-                <Text style={styles.title}>Log In</Text>
-                <Formik
-                    initialValues={{ email: '', password: '' }}
-                    validationSchema={Yup.object({
-                        email: Yup.string()
-                            .email('Invalid Email')
-                            .required('Required'),
-                        password: Yup.string()
-                            .required('Required'),
-                    })}
-                    onSubmit={(values, formikActions) => {
-                        setTimeout(() => {
-                            this.handleLogIn(values);
-                            //Alert.alert(JSON.stringify(values));
-                            // Important: Make sure to setSubmitting to false so our loading indicator
-                            // goes away.
-                            formikActions.setSubmitting(false);
-                        }, 500);
-                    }}>
-                    {props => (
-                        <View>
+            <Formik
+                initialValues={{ email: '', password: '' }}
+                validationSchema={Yup.object({
+                    email: Yup.string()
+                        .email('Invalid Email')
+                        .required('Required'),
+                    password: Yup.string()
+                        .required('Required'),
+                })}
+                onSubmit={(values, formikActions) => {
+                    setTimeout(() => {
+                        this.handleLogIn(values);
+                        //Alert.alert(JSON.stringify(values));
+                        // Important: Make sure to setSubmitting to false so our loading indicator
+                        // goes away.
+                        formikActions.setSubmitting(false);
+                    }, 500);
+                }}>
+                {props => (
+                    <View style={styles.container}>
+                        <Image style={{ width: 150, height: 150, marginRight: 50, alignSelf: 'center' }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
+                        <View style={{ marginTop: 20 }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: color.black }}>Welcome</Text>
+                        </View>
+                        <View style={{ marginTop: 20 }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: color.grey }}>Login to continue</Text>
+                        </View>
+
+                        <View style={{ marginTop: 50 }}>
                             {this.state.logInErrorMessage &&
                                 <Text style={{ color: 'red' }}>
                                     {this.state.logInErrorMessage}
@@ -94,38 +102,38 @@ class Login extends Component {
                             {props.touched.password && props.errors.password ? (
                                 <Text style={styles.error}>{props.errors.password}</Text>
                             ) : null}
-                            <Button
-                                title="Submit"
+                            <TouchableOpacity
+                                style={styles.logInButton}
                                 onPress={props.handleSubmit}
-                                color="black"
-                                mode="contained"
                                 loading={props.isSubmitting}
                                 disabled={props.isSubmitting}
-                            />
-                            <Button
-                                title="Don't have an account? Sign Up"
-                                onPress={() => this.props.navigation.navigate('SignUp')}
-                            />
+                            >
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>LOGIN</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ height: 20, marginTop: 20 }} onPress={() => this.props.navigation.navigate('SignUp')}>
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-start' }}>
+                                    <Text style={[styles.signUpText, { color: color.grey }]}>Don't have an account? </Text>
+                                    <Text style={[styles.signUpText, { color: color.redButton }]}>Sign Up</Text>
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                    )}
-                </Formik>
-            </View>
+
+                    </View>
+                )}
+            </Formik>
         );
     }
 }
 
+TouchableOpacity
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 200,
-        backgroundColor: '#ecf0f1',
-        padding: 8,
-    },
-    title: {
-        margin: 24,
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        paddingTop: 120,
+        paddingLeft: 50,
+        backgroundColor: color.white
     },
     error: {
         margin: 8,
@@ -138,9 +146,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         width: '100%',
         borderColor: '#ddd',
-        borderWidth: 1,
+        borderBottomWidth: 1,
         backgroundColor: '#fff',
     },
+    logInButton: {
+        marginTop: 50,
+        borderRadius: 8,
+        width: '50%',
+        height: 45,
+        backgroundColor: color.lightGrey
+    },
+    signUpText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

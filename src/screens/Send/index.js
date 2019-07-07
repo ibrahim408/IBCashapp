@@ -45,15 +45,6 @@ class index extends Component {
         ),
         headerTitle: (
             <Image style={{ width: 75, height: 75, flex: 1 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
-        ),
-        headerRight: (
-            <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
-                <Icon
-                    name="setting"
-                    size={22}
-                    color={color.grey}
-                />
-            </TouchableOpacity>
         )
     });
 
