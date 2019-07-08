@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, Button, Image, TouchableOpacity } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    Image,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard
+} from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { logIn } from '../../redux/actions/App'
@@ -15,6 +24,15 @@ const mapStateToProps = ({ user }) => ({
     logInError: user.logInError
 })
 
+const DismissKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback style={{ flex: 1, backgroundColor: 'red' }}
+        onPress={() => {
+            console.log('dismissssss')
+            Keyboard.dismiss()
+        }}>
+        {children}
+    </TouchableWithoutFeedback>
+)
 
 class Login extends Component {
     constructor(props) {
@@ -78,7 +96,6 @@ class Login extends Component {
                                 value={props.values.email}
                                 placeholder="Email Address"
                                 style={styles.input}
-                                autoFocus
                                 autoCapitalize="none"
                                 onSubmitEditing={() => {
                                     // on certain forms, it is nice to move the user's focus
@@ -119,10 +136,10 @@ class Login extends Component {
                                 </View>
                             </TouchableOpacity>
                         </View>
-
                     </View>
                 )}
             </Formik>
+
         );
     }
 }

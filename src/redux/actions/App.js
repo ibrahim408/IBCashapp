@@ -181,7 +181,6 @@ export const fetchTransactions = () => (dispatch, getState) => {
             let filterTransactions = transactions.filter((transaction) => {
                 return (transaction.recieverEmail == currentUser.email) || (transaction.senderEmail == currentUser.email)
             })
-            console.log('transsssss: ', filterTransactions);
             dispatch({
                 type: C.FETCH_TRANSACTIONS,
                 payload: filterTransactions
@@ -192,12 +191,26 @@ export const fetchTransactions = () => (dispatch, getState) => {
 }
 
 export const sendMoneyOrRequest = (transaction) => dispatch => {
-    this.updateRecieverBalance(transaction);
-    Firebase.firestore().collection(C.TRANSACTIONS).add(transaction)
-        .then((ref) => {
-            dispatch({
-                type: C.SEND_OR_REQUEST,
+    var user;
+    Firebase.firestore().collection(C.USERS)
+        .where("email", '==', transaction.recieverEmail)
+        .get()
+        .then(snapshot => {
+            user = snapshot.docs.map(doc => {
+                return { ...doc.data(), id: doc.id }
             })
+        })
+        .then(() => {
+            if (user.length) {
+                this.updateRecieverBalance(transaction);
+                Firebase.firestore().collection(C.TRANSACTIONS).add(transaction)
+                    .then((ref) => {
+                        dispatch({
+                            type: C.SEND_OR_REQUEST,
+                        })
+                    })
+                    .catch(error => console.log("ERROR :", error))
+            }
         })
         .catch(error => console.log("ERROR :", error))
 }
@@ -246,13 +259,6 @@ updateRecieverBalance = (transaction) => {
                 Firebase.firestore().collection(C.USERS).doc(user[0].id)
                     .update({
                         balance: user[0].balance + transaction.amount
-                    })
-                    .then(() =>
-                    {
-                        console.log('here here cinco');
-                        console.log(user[0].balance);
-                        console.log( transaction.amount);
-
                     })
                     .catch(() => console.error("error des", error));
             })

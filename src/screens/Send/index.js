@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Image, Dimensions, TextInput, Button } from 'react-native';
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
@@ -13,7 +13,7 @@ const mapDispatchToProps = {
     fetchCards,
     fetchTransactions,
     sendMoneyOrRequest,
-    setAmount, 
+    setAmount,
     setIsTenth
 }
 
@@ -23,18 +23,24 @@ const mapStateToProps = (state) => ({
     amount: state.transactions.amount,
 })
 
+const DismissKeyboard = ({ children }) => (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        {children}
+    </TouchableWithoutFeedback>
+)
+
 class index extends Component {
-    static navigationOptions = ({navigation}) => ({
+    static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             borderBottomWidth: 0,
         },
         headerLeft: (
             <TouchableOpacity style={{ backgroundColor: 'transparent', marginLeft: 10 }}
-            onPress={() => {
-                navigation.goBack()
-                navigation.state.params.setAmount(0);
-                navigation.state.params.setIsTenth(false);
-            }}
+                onPress={() => {
+                    navigation.goBack()
+                    navigation.state.params.setAmount(0);
+                    navigation.state.params.setIsTenth(false);
+                }}
             >
                 <IconDos
                     name="arrow-left"
@@ -55,18 +61,22 @@ class index extends Component {
         this.props.navigation.setParams({
             setAmount: this.actionSetAmount,
             setIsTenth: this.actionSetIsTenth
-          });
+        });
+    }
+    componentWillUnmount() {
+        this.props.setAmount(0);
+        this.props.setIsTenth(false);
     }
 
     actionSetAmount = (amount) => {
-        this.props.setAmount(amount); 
+        this.props.setAmount(amount);
     };
 
     actionSetIsTenth = (boolean) => {
-        this.props.setIsTenth(boolean); 
+        this.props.setIsTenth(boolean);
     };
 
-    handleSubmitTransaction = (values) => {        
+     handleSubmitTransaction = async (values) => {
         if (this.props.amount != 0) {
             let transaction = {
                 ...values,
@@ -76,7 +86,7 @@ class index extends Component {
                 date: new Date(),
                 action: 'pending',
             }
-            this.props.sendMoneyOrRequest(transaction);
+            await this.props.sendMoneyOrRequest(transaction);
             this.props.fetchTransactions();
             this.props.navigation.goBack()
         }
@@ -85,71 +95,71 @@ class index extends Component {
     render() {
         const { bindSubmitForm } = this.props;
         return (
-            <Formik
-                initialValues={{ recieverEmail: '', description: '', type: '' }}
-                validationSchema={Yup.object({
-                    recieverEmail: Yup.string()
-                        .email('Invalid Email')
-                        .required('Required'),
-                    description: Yup.string(),
-                    type: Yup.string(),
-                })}
-                onSubmit={(values, formikActions) => {
-                    setTimeout(() => {
-                        this.handleSubmitTransaction(values);
-                        //Alert.alert(JSON.stringify(values));
-                        // Important: Make sure to setSubmitting to false so our loading indicator
-                        // goes away.
-                        formikActions.setSubmitting(false);
-                    }, 500);
-                }}>
-                {props => (
-                    <View style={styles.container}>
-                        <View style={styles.recieverInfoContainer}>
-                            <View>
-                                <TextInput
-                                    onChangeText={props.handleChange('recieverEmail')}
-                                    onBlur={props.handleBlur('recieverEmail')}
-                                    value={props.values.recieverEmail}
-                                    placeholder="Email Address"
-                                    style={styles.input}
-                                    autoFocus
-                                    autoCapitalize="none"
-                                />
-                                {props.touched.recieverEmail && props.errors.recieverEmail ? (
-                                    <Text style={styles.error}>{props.errors.recieverEmail}</Text>
-                                ) : null}
-                                <TextInput
-                                    onChangeText={props.handleChange('description')}
-                                    onBlur={props.handleBlur('description')}
-                                    value={props.values.description}
-                                    placeholder="payment for"
-                                    autoCapitalize="none"
-                                    style={styles.input}
-                                />
+                <Formik
+                    initialValues={{ recieverEmail: '', description: '', type: '' }}
+                    validationSchema={Yup.object({
+                        recieverEmail: Yup.string()
+                            .email('Invalid Email')
+                            .required('Required'),
+                        description: Yup.string(),
+                        type: Yup.string(),
+                    })}
+                    onSubmit={(values, formikActions) => {
+                        setTimeout(() => {
+                            this.handleSubmitTransaction(values);
+                            //Alert.alert(JSON.stringify(values));
+                            // Important: Make sure to setSubmitting to false so our loading indicator
+                            // goes away.
+                            formikActions.setSubmitting(false);
+                        }, 500);
+                    }}>
+                    {props => (
+                        <View style={styles.container}>
+                            <View style={styles.recieverInfoContainer}>
+                                <View>
+                                    <TextInput
+                                        onChangeText={props.handleChange('recieverEmail')}
+                                        onBlur={props.handleBlur('recieverEmail')}
+                                        value={props.values.recieverEmail}
+                                        placeholder="Email Address"
+                                        style={styles.input}
+                                        autoFocus
+                                        autoCapitalize="none"
+                                    />
+                                    {props.touched.recieverEmail && props.errors.recieverEmail ? (
+                                        <Text style={styles.error}>{props.errors.recieverEmail}</Text>
+                                    ) : null}
+                                    <TextInput
+                                        onChangeText={props.handleChange('description')}
+                                        onBlur={props.handleBlur('description')}
+                                        value={props.values.description}
+                                        placeholder="payment for"
+                                        autoCapitalize="none"
+                                        style={styles.input}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.amountContainer}>
+                                <Text style={styles.transactionAmountStyle}>${this.props.amount}</Text>
+                            </View>
+                            <Keypad />
+                            <View style={styles.requestOrPayContainer}>
+                                <TouchableOpacity style={styles.payButton} onPress={async () => {
+                                    await props.setFieldValue('type', 'pay');
+                                    props.handleSubmit();
+                                }} >
+                                    <Text style={{ fontSize: 18, color: color.white }}>Pay</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.requestButton} onPress={async () => {
+                                    await props.setFieldValue('type', 'request');
+                                    props.handleSubmit();
+                                }} >
+                                    <Text style={{ fontSize: 18, color: color.white }}>Request</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={styles.amountContainer}>
-                            <Text style={styles.transactionAmountStyle}>${this.props.amount}</Text>
-                        </View>
-                        <Keypad />
-                        <View style={styles.requestOrPayContainer}>
-                            <TouchableOpacity style={styles.payButton} onPress={async () => {
-                                await props.setFieldValue('type', 'pay');
-                                props.handleSubmit();
-                            }} >
-                                <Text style={{ fontSize: 18, color: color.white }}>Pay</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.requestButton} onPress={async () => {
-                                await props.setFieldValue('type', 'request');
-                                props.handleSubmit();
-                            }} >
-                                <Text style={{ fontSize: 18, color: color.white }}>Request</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                )}
-            </Formik>
+                    )}
+                </Formik>
         );
     }
 }

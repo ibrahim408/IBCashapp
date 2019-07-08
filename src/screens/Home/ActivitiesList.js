@@ -21,8 +21,13 @@ class ActivitiesList extends Component {
     }
     render() {
         let avatarColors = [color.livingCoral,color.ultraViolet,color.peachPink,color.blueStone];
+        let backgroundColor = color.tanbackGround;
+
+        if (this.props.disable){
+            backgroundColor = color.white;
+        }
         return (
-            <View style={styles.bottomContainer}>
+            <View style={[styles.bottomContainer, {backgroundColor: backgroundColor}]}>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginTop: 10, }}>
                     <View style={{ marginTop: 5, marginLeft: 10 }}>
                         <Text style={{ fontSize: 20 }}>Activity</Text>
@@ -57,7 +62,7 @@ class ActivitiesList extends Component {
                             color={avatarColors[index % avatarColors.length]}
                             date3={Date(item.seconds)}
                             date={{
-                                day: new Date(Date(item.seconds)).getDay(),
+                                day: new Date(Date(item.seconds)).getDate(),
                                 month: new Date(Date(item.seconds)).getMonth() + 1
                             }}
                         />}
@@ -70,8 +75,7 @@ class ActivitiesList extends Component {
 
 const styles = StyleSheet.create({
     bottomContainer: {
-        flex: 11,
-        backgroundColor: color.tanbackGround,
+        flex: 11
     },
     activityButtonStyle: {
         height: 20,

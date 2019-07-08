@@ -67,34 +67,17 @@ class Keypad extends Component {
         }
     }
 
-
-    // onDigitPress = (number) => {
-    //     let numberDecimal = number / 10;
-    //     const amount = this.state.transactionAmount;
-    //     let decimalPlace = (amount.toString().split('.')[1] || []).length;
-
-    //     if (amount == 0) {
-    //         // this.setState({ transactionAmount: number })
-    //     } else if (decimalPlace < 2) {
-    //         if (this.state.isTenth == false) {
-    //             //this.setState({ transactionAmount: parseFloat(amount + number.toString()) })
-    //         } else {
-    //             // this.setState({
-    //             //     transactionAmount: amount + numberDecimal,
-    //             //     isTenth: false
-    //             // })
-    //         }
-    //     }
-    // }
-
     onPressDot = () => {
         if (this.props.isTenth == false && (this.props.amount % 1 == 0)) {
             this.props.setIsTenth(true);
         }
     }
 
-    // bugggy
+
     onPressBackSpace = () => {
+        this.props.setAmount(0);
+        this.props.setIsTenth(false);
+        
         // const amountString = this.state.transactionAmount;
         // var newAmountStr = amountString.toString().substr(0, amountString.toString().length-1);
 

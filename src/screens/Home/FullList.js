@@ -24,16 +24,7 @@ class FullList extends Component {
             </TouchableOpacity>
         ),
         headerTitle: (
-          <Image style={{ width: 75, height: 75, alignSelf: 'flex-end' }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
-        ),
-        headerRight: (
-          <TouchableOpacity style={{ backgroundColor: 'transparent', marginRight: 10 }}>
-            <Icon
-              name="setting"
-              size={22}
-              color={color.black}
-            />
-          </TouchableOpacity>
+          <Image style={{ width: 75, height: 75 }} resizeMode="contain" source={require('../../assets/images/logo.png')} />
         )
       });
     render() {

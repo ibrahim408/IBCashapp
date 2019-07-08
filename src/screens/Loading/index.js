@@ -3,6 +3,7 @@ import {StyleSheet, View, ActivityIndicator } from 'react-native'
 import Firebase from '../../Firebase';
 import { fetchUserDetails } from '../../redux/actions/App'
 import { connect } from "react-redux";
+import color from '../../config/colors'
 
 const mapDispatchToProps = {
   fetchUserDetails,
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: color.bluecard
   },
 });
 
