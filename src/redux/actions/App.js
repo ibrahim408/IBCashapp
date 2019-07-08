@@ -3,9 +3,10 @@ import Firebase from '../../Firebase'
 
 /* 
 user API
-login
-sign up
-fetch user
+fetchUserDetails
+logIn
+signUp
+logOut
 *////////////////////////////////////////////////////
 
 export const fetchUserDetails = (uid) => dispatch => {
@@ -87,9 +88,9 @@ export const logOut = () => {
 
 /*
 card API
-addCard
-getCards
-updateCards
+createCard
+updateCard
+fetchCards
 *////////////////////////////////////////////////////
 
 export const createCard = (card) => (dispatch, getState) => {
@@ -135,39 +136,15 @@ export const fetchCards = () => (dispatch, getState) => {
         })
 }
 
-export const getCards = () => dispatch => {
-    const docRef = Firebase.firestore().collection(C.CARDS);
-    docRef.get()
-        .then(snapshot => {
-            let cards = snapshot.docs.map(doc => {
-                return { ...doc.data(), id: doc.id };
-            });
-
-            dispatch({
-                type: C.FETCH_CARDS,
-                payload: cards
-            })
-        }).catch(function (error) {
-            console.log("got an error", error);
-        })
-}
-
-export const cardListener = (db, dispatch) => dispatch => {
-    let doc = Firebase.firestore().collection(C.CARDS).doc('7WnsttTooEiIthfV4i7S');
-
-    let observer = doc.onSnapshot(docSnapshot => {
-        console.log(`Received doc snapshot: ${docSnapshot}`);
-        // ...
-    }, err => {
-        console.log(`Encountered error: ${err}`);
-    });
-};
-
 /*
 transactions API
-fetch transactions
-sendRequestMoney
+fetchTransactions
+sendMoneyOrRequest
 acceptRequest
+updateRecieverBalance
+declineRequest
+setAmount
+setIsTenth
 *////////////////////////////////////////////////////
 
 export const fetchTransactions = () => (dispatch, getState) => {
@@ -210,6 +187,10 @@ export const sendMoneyOrRequest = (transaction) => dispatch => {
                         })
                     })
                     .catch(error => console.log("ERROR :", error))
+            } else {
+                dispatch({
+                    type: C.TRANSACTION_FAILED
+                })
             }
         })
         .catch(error => console.log("ERROR :", error))
@@ -255,10 +236,12 @@ updateRecieverBalance = (transaction) => {
                 })
             })
             .then(() => {
-                console.log('here here quatro');
+                let balance = user[0].balance + parseFloat(transaction.amount);
+                balance = balance.toFixed(2);
+
                 Firebase.firestore().collection(C.USERS).doc(user[0].id)
                     .update({
-                        balance: user[0].balance + transaction.amount
+                        balance: balance
                     })
                     .catch(() => console.error("error des", error));
             })

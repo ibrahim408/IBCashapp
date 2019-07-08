@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Image, Dimensions, TextInput, Button } from 'react-native';
-import Icon from "react-native-vector-icons/AntDesign";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Image,
+    TextInput
+} from 'react-native';
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
 import Keypad from './Keypad'
@@ -16,11 +24,11 @@ const mapDispatchToProps = {
     setAmount,
     setIsTenth
 }
-
 const mapStateToProps = (state) => ({
     user: state.user.currentUser,
     isCardFetched: state.card.isCardFetched,
     amount: state.transactions.amount,
+    transactionResult: state.transactions.transactionResult
 })
 
 const DismissKeyboard = ({ children }) => (
@@ -30,6 +38,7 @@ const DismissKeyboard = ({ children }) => (
 )
 
 class index extends Component {
+
     static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             borderBottomWidth: 0,
@@ -54,7 +63,7 @@ class index extends Component {
         )
     });
 
-    state = {}
+    state = {transactionError: null}
 
     componentDidMount() {
         this.props.fetchCards();
@@ -63,9 +72,17 @@ class index extends Component {
             setIsTenth: this.actionSetIsTenth
         });
     }
+
     componentWillUnmount() {
         this.props.setAmount(0);
         this.props.setIsTenth(false);
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.transactionResult != this.props.transactionResult) {
+            this.setState({
+                transactionError: 'email not in system'
+            })
+        }
     }
 
     actionSetAmount = (amount) => {
@@ -76,8 +93,11 @@ class index extends Component {
         this.props.setIsTenth(boolean);
     };
 
-     handleSubmitTransaction = async (values) => {
-        if (this.props.amount != 0) {
+    handleSubmitTransaction = async (values) => {
+        console.log('sender :', this.props.user.email);
+        console.log('recevier :', values.recieverEmail);
+
+        if (this.props.amount != 0 && (this.props.user.email != values.recieverEmail)) {
             let transaction = {
                 ...values,
                 senderEmail: this.props.user.email,
@@ -89,77 +109,82 @@ class index extends Component {
             await this.props.sendMoneyOrRequest(transaction);
             this.props.fetchTransactions();
             this.props.navigation.goBack()
+        }else {
+            this.setState({
+                transactionError: 'Entered non-valid amount or email'
+            });
         }
     }
 
     render() {
         const { bindSubmitForm } = this.props;
         return (
-                <Formik
-                    initialValues={{ recieverEmail: '', description: '', type: '' }}
-                    validationSchema={Yup.object({
-                        recieverEmail: Yup.string()
-                            .email('Invalid Email')
-                            .required('Required'),
-                        description: Yup.string(),
-                        type: Yup.string(),
-                    })}
-                    onSubmit={(values, formikActions) => {
-                        setTimeout(() => {
-                            this.handleSubmitTransaction(values);
-                            //Alert.alert(JSON.stringify(values));
-                            // Important: Make sure to setSubmitting to false so our loading indicator
-                            // goes away.
-                            formikActions.setSubmitting(false);
-                        }, 500);
-                    }}>
-                    {props => (
-                        <View style={styles.container}>
-                            <View style={styles.recieverInfoContainer}>
-                                <View>
-                                    <TextInput
-                                        onChangeText={props.handleChange('recieverEmail')}
-                                        onBlur={props.handleBlur('recieverEmail')}
-                                        value={props.values.recieverEmail}
-                                        placeholder="Email Address"
-                                        style={styles.input}
-                                        autoFocus
-                                        autoCapitalize="none"
-                                    />
-                                    {props.touched.recieverEmail && props.errors.recieverEmail ? (
-                                        <Text style={styles.error}>{props.errors.recieverEmail}</Text>
-                                    ) : null}
-                                    <TextInput
-                                        onChangeText={props.handleChange('description')}
-                                        onBlur={props.handleBlur('description')}
-                                        value={props.values.description}
-                                        placeholder="payment for"
-                                        autoCapitalize="none"
-                                        style={styles.input}
-                                    />
-                                </View>
-                            </View>
-                            <View style={styles.amountContainer}>
-                                <Text style={styles.transactionAmountStyle}>${this.props.amount}</Text>
-                            </View>
-                            <Keypad />
-                            <View style={styles.requestOrPayContainer}>
-                                <TouchableOpacity style={styles.payButton} onPress={async () => {
-                                    await props.setFieldValue('type', 'pay');
-                                    props.handleSubmit();
-                                }} >
-                                    <Text style={{ fontSize: 18, color: color.white }}>Pay</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.requestButton} onPress={async () => {
-                                    await props.setFieldValue('type', 'request');
-                                    props.handleSubmit();
-                                }} >
-                                    <Text style={{ fontSize: 18, color: color.white }}>Request</Text>
-                                </TouchableOpacity>
+            <Formik
+                initialValues={{ recieverEmail: '', description: '', type: '' }}
+                validationSchema={Yup.object({
+                    recieverEmail: Yup.string()
+                        .email('Invalid Email')
+                        .required('Required'),
+                    description: Yup.string(),
+                    type: Yup.string(),
+                })}
+                onSubmit={(values, formikActions) => {
+                    setTimeout(() => {
+                        this.handleSubmitTransaction(values);
+                        formikActions.setSubmitting(false);
+                    }, 500);
+                }}>
+                {props => (
+                    <View style={styles.container}>
+                        <View style={styles.recieverInfoContainer}>
+                            <View>
+                                {this.state.transactionError &&
+                                    <Text style={{ color: 'red', alignSelf: 'center' }}>
+                                        {this.state.transactionError}
+                                    </Text>
+                                }
+                                <TextInput
+                                    onChangeText={props.handleChange('recieverEmail')}
+                                    onBlur={props.handleBlur('recieverEmail')}
+                                    value={props.values.recieverEmail}
+                                    placeholder="Email Address"
+                                    style={styles.input}
+                                    autoCapitalize="none"
+                                />
+                                {props.touched.recieverEmail && props.errors.recieverEmail ? (
+                                    <Text style={styles.error}>{props.errors.recieverEmail}</Text>
+                                ) : null}
+                                <TextInput
+                                    onChangeText={props.handleChange('description')}
+                                    onBlur={props.handleBlur('description')}
+                                    value={props.values.description}
+                                    placeholder="payment for"
+                                    autoCapitalize="none"
+                                    style={styles.input}
+                                />
                             </View>
                         </View>
-                    )}
-                </Formik>
+                        <View style={styles.amountContainer}>
+                            <Text style={styles.transactionAmountStyle}>${this.props.amount}</Text>
+                        </View>
+                        <Keypad />
+                        <View style={styles.requestOrPayContainer}>
+                            <TouchableOpacity style={styles.payButton} onPress={async () => {
+                                await props.setFieldValue('type', 'pay');
+                                props.handleSubmit();
+                            }} >
+                                <Text style={{ fontSize: 18, color: color.white }}>Pay</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.requestButton} onPress={async () => {
+                                await props.setFieldValue('type', 'request');
+                                props.handleSubmit();
+                            }} >
+                                <Text style={{ fontSize: 18, color: color.white }}>Request</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+            </Formik>
         );
     }
 }

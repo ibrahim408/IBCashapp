@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Dimensions, Text, Image } from 'react-native';
+import {
+    View,
+    StyleSheet,
+    TouchableOpacity,
+    Dimensions,
+    Text
+} from 'react-native';
 import { connect } from "react-redux";
 import color from '../../config/colors'
 
 let deviceWidth = Dimensions.get('window').width
-let deviceHeight = Dimensions.get('window').height
 
 const mapStateToProps = ({ user }) => ({
     user: user.currentUser,
 })
 
 class CustomeCell extends Component {
+
     state = {}
+
     renderAmount = (type, action, amount, senderEmail) => {
         if (type == "received")
             return <Text style={{ fontSize: 20, color: color.green }}>+ ${amount}</Text>
@@ -27,6 +34,7 @@ class CustomeCell extends Component {
             return <Text style={{ fontSize: 20, color: color.grey }}>accept ${amount}</Text>
 
     }
+
     render() {
         let avatarColor = this.props.color;
         let firstCharOfName = this.props.senderName.charAt(0).toUpperCase();
@@ -69,9 +77,6 @@ class CustomeCell extends Component {
     }
 }
 
-
-// <Image source={{ uri: this.props.avatar }} style={styles.avatar} />
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -95,7 +100,6 @@ const styles = StyleSheet.create({
     detailContainer: {
         flex: 85,
         justifyContent: 'center',
-        //alignItems: 'center',        
         flexDirection: 'column'
     }
 })

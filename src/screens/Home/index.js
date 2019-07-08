@@ -1,13 +1,20 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image, Alert } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  TouchableOpacity,
+  Image,
+  Alert
+} from 'react-native'
 import color from '../../config/colors'
 import { fetchCards, logOut } from '../../redux/actions/App'
 import { connect } from "react-redux";
-import { firestoreConnect } from 'react-redux-firebase'
-import { compose } from 'redux'
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/MaterialCommunityIcons";
 import ActivitiesList from './ActivitiesList'
+
 let deviceWidth = Dimensions.get('window').width
 let deviceHeight = Dimensions.get('window').height
 
@@ -23,6 +30,7 @@ const mapStateToProps = (state) => ({
 })
 
 class Home extends Component {
+
   static navigationOptions = ({ navigation }) => ({
     headerStyle: {
       borderBottomWidth: 0,
@@ -99,8 +107,6 @@ class Home extends Component {
       expYear = parseInt(active.expYear) - 2000;
     else
       expYear = parseInt(active.expYear);
-
-
 
     this.setState({
       activeCard: active,
@@ -231,7 +237,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    //marginRight: deviceWidth/30,
     borderTopRightRadius: 40,
     borderBottomRightRadius: 40,
     backgroundColor: color.white
@@ -252,10 +257,5 @@ const styles = StyleSheet.create({
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
-// export default compose(
-//   connect(mapStateToProps, mapDispatchToProps),
-//   firestoreConnect([
-//    { collection: 'transactions'}
-//   ])
-//  )(Home)
+
 

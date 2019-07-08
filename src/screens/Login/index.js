@@ -35,6 +35,7 @@ const DismissKeyboard = ({ children }) => (
 )
 
 class Login extends Component {
+
     constructor(props) {
         super(props);
         this.state = { logInErrorMessage: null };
@@ -53,7 +54,6 @@ class Login extends Component {
         this.props.logIn(values.email, values.password);
     }
 
-    passwordInput = null;
     render() {
         return (
             <Formik
@@ -68,9 +68,6 @@ class Login extends Component {
                 onSubmit={(values, formikActions) => {
                     setTimeout(() => {
                         this.handleLogIn(values);
-                        //Alert.alert(JSON.stringify(values));
-                        // Important: Make sure to setSubmitting to false so our loading indicator
-                        // goes away.
                         formikActions.setSubmitting(false);
                     }, 500);
                 }}>
@@ -153,10 +150,10 @@ const styles = StyleSheet.create({
         backgroundColor: color.white
     },
     error: {
-        margin: 8,
-        fontSize: 14,
-        color: 'red',
-        fontWeight: 'bold',
+        marginTop: 8,
+        marginLeft: 8,
+        fontSize: 12,
+        color: color.redButton,
     },
     input: {
         height: 50,

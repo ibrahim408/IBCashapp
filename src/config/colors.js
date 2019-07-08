@@ -1,4 +1,3 @@
-
 const colors = {
     bluecard: '#4072E1',
     tanbackGround: '#FDF6EB',
@@ -18,4 +17,5 @@ const colors = {
     blueStone: '#577284',
     lightGrey: '#E7E7EF',
   };
+  
  export default colors;

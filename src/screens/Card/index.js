@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button, FlatList } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Dimensions,
+    FlatList
+} from 'react-native';
 import Icon from "react-native-vector-icons/AntDesign";
 import IconDos from "react-native-vector-icons/Feather";
 import color from '../../config/colors'
-import { fetchCards,updateCard } from '../../redux/actions/App'
+import { fetchCards, updateCard } from '../../redux/actions/App'
 import { connect } from "react-redux";
 
 let deviceWidth = Dimensions.get('window').width
-let deviceHeight = Dimensions.get('window').height
 
 const mapDispatchToProps = {
     fetchCards,
@@ -21,6 +28,7 @@ const mapStateToProps = (state) => ({
 })
 
 class Card extends Component {
+
     static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             borderBottomWidth: 0,
@@ -46,6 +54,7 @@ class Card extends Component {
     state = {
         activeCard: '',
     };
+
     componentDidMount() {
         this.props.fetchCards();
     }
@@ -60,27 +69,29 @@ class Card extends Component {
             }
         }
     }
+
     handlePressMakeDefault = (newActiveCard) => {
-        if(this.state.activeCard != ''){
-            let resetOldActiveCard = {...this.state.activeCard, active: false}
+        if (this.state.activeCard != '') {
+            let resetOldActiveCard = { ...this.state.activeCard, active: false }
             this.props.updateCard(resetOldActiveCard);
         }
-        let setNewActiveCard = {...newActiveCard, active: true}
+        let setNewActiveCard = { ...newActiveCard, active: true }
         this.props.updateCard(setNewActiveCard);
         this.props.fetchCards();
     }
+
     renderCards = (item, index) => {
         let lastIndex = this.props.cards.length - 1;
         let cardNumber = item.cardNumber;
         let last4Digits = cardNumber.toString().substr(cardNumber.toString().length - 4);
         if (item.id == this.state.activeCard.id) {
-            return this.renderActiveCard('staro',last4Digits)
+            return this.renderActiveCard('staro', last4Digits)
         } else {
-            return this.renderNoActiveCard('star',last4Digits,item)
+            return this.renderNoActiveCard('star', last4Digits, item)
         }
     }
 
-    renderActiveCard = (iconLabel,last4Digits) => {
+    renderActiveCard = (iconLabel, last4Digits) => {
         return (
             <View style={styles.listColumnContainer}>
                 <View style={styles.creditCardContainer}>
@@ -99,7 +110,8 @@ class Card extends Component {
             </View>
         )
     }
-    renderNoActiveCard = (iconLabel,last4Digits,item) => {
+
+    renderNoActiveCard = (iconLabel, last4Digits, item) => {
         return (
             <View style={[styles.listColumnContainer, { justifyContent: 'space-between' }]}>
                 <View style={{ flexDirection: 'row' }}>
@@ -114,7 +126,7 @@ class Card extends Component {
                     </View>
                     <View style={{ marginLeft: 20 }}>
                         <Text style={{ fontSize: 18 }}>{last4Digits}
-                </Text>
+                        </Text>
                     </View>
                 </View>
                 <TouchableOpacity onPress={() => this.handlePressMakeDefault(item)}>
@@ -125,7 +137,6 @@ class Card extends Component {
             </View>
         )
     }
-
 
     renderAddCard = () => {
         return (

@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, TextInput, Button, FlatList } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image
+} from 'react-native';
 import { acceptRequest, declineRequest, fetchTransactions } from '../../redux/actions/App'
 import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -13,6 +19,7 @@ const mapDispatchToProps = {
 }
 
 class AcceptRequest extends Component {
+
     static navigationOptions = ({ navigation }) => ({
         headerStyle: {
             borderBottomWidth: 0,
@@ -43,18 +50,21 @@ class AcceptRequest extends Component {
             </TouchableOpacity>
         )
     });
-    state = {}
+
     handleActionDecline = (id) => {
         this.props.declineRequest(id);
         this.props.fetchTransactions();
         this.props.navigation.goBack()
     }
-    handleActionAccept = (id,senderEmail,recieverEmail,amount) => {
-        this.props.acceptRequest(id,senderEmail,recieverEmail,amount);
+
+    handleActionAccept = (id, senderEmail, recieverEmail, amount) => {
+        this.props.acceptRequest(id, senderEmail, recieverEmail, amount);
         this.props.fetchTransactions();
         this.props.navigation.goBack()
     }
+
     render() {
+
         const { navigation } = this.props;
         const from = navigation.getParam('from', 'NO-ID');
         const amount = navigation.getParam('amount', 'some default value');
@@ -64,24 +74,24 @@ class AcceptRequest extends Component {
 
         return (
             <View style={styles.container}>
-                <View style={{marginTop: 75}}>
-                    <Text style={{alignSelf: 'center' , fontSize: 20, color: color.grey}}>request </Text>
-                    <Text style={{alignSelf: 'center', fontSize: 20, color: color.grey}}>from  </Text>
-                    <Text style={{alignSelf: 'center', fontSize: 25, color: color.grey}}>{from} </Text>
+                <View style={{ marginTop: 75 }}>
+                    <Text style={{ alignSelf: 'center', fontSize: 20, color: color.grey }}>request </Text>
+                    <Text style={{ alignSelf: 'center', fontSize: 20, color: color.grey }}>from  </Text>
+                    <Text style={{ alignSelf: 'center', fontSize: 25, color: color.grey }}>{from} </Text>
                 </View>
                 <View>
-                    <Text style={{fontSize: 100, color: color.bluecard}}>${amount} </Text>
+                    <Text style={{ fontSize: 100, color: color.bluecard }}>${amount} </Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity 
-                    onPress={() => this.handleActionDecline(id)} 
-                    style={[styles.actionButton, styles.declineButton]}>
-                        <Text style={{fontSize: 20, color: color.white}}>decline</Text>
+                    <TouchableOpacity
+                        onPress={() => this.handleActionDecline(id)}
+                        style={[styles.actionButton, styles.declineButton]}>
+                        <Text style={{ fontSize: 20, color: color.white }}>decline</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                    onPress={() => this.handleActionAccept(id,senderEmail,recieverEmail,amount)}
-                    style={[styles.actionButton, styles.acceptButton]}>
-                        <Text style={{fontSize: 20, color: color.white}}>accept</Text>
+                    <TouchableOpacity
+                        onPress={() => this.handleActionAccept(id, senderEmail, recieverEmail, amount)}
+                        style={[styles.actionButton, styles.acceptButton]}>
+                        <Text style={{ fontSize: 20, color: color.white }}>accept</Text>
                     </TouchableOpacity>
                 </View>
             </View>

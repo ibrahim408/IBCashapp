@@ -3,6 +3,7 @@ import C from '../../constants'
 const initialState = {
     transactions: '',
     isTransactionsFetched: 0,
+    transactionResult: 0,
     amount: 0,
     isTenth: false
 }
@@ -11,6 +12,10 @@ export default(state = initialState, action) => {
     switch(action.type){
         case C.SEND_OR_REQUEST: return{
             ...state
+        }
+        case C.TRANSACTION_FAILED: return{
+            ...state,
+            transactionResult: state.transactionResult+1
         }
         case C.ACCEPT_REQUEST: return {
             ...state

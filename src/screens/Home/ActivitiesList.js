@@ -1,33 +1,43 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, Image } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    TouchableOpacity,
+    FlatList
+} from 'react-native';
 import { fetchTransactions } from '../../redux/actions/App'
 import { connect } from "react-redux";
 import CustomeCell from './CustomeCell'
 import color from '../../config/colors'
+
 let deviceWidth = Dimensions.get('window').width
-let deviceHeight = Dimensions.get('window').height
 
 const mapDispatchToProps = {
     fetchTransactions,
 }
-
 const mapStateToProps = ({ transactions }) => ({
     transactions: transactions.transactions,
 })
+
 class ActivitiesList extends Component {
+
     state = {}
+
     componentDidMount() {
         this.props.fetchTransactions()
     }
+
     render() {
-        let avatarColors = [color.livingCoral,color.ultraViolet,color.peachPink,color.blueStone];
+        let avatarColors = [color.livingCoral, color.ultraViolet, color.peachPink, color.blueStone];
         let backgroundColor = color.tanbackGround;
 
-        if (this.props.disable){
+        if (this.props.disable) {
             backgroundColor = color.white;
         }
         return (
-            <View style={[styles.bottomContainer, {backgroundColor: backgroundColor}]}>
+            <View style={[styles.bottomContainer, { backgroundColor: backgroundColor }]}>
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginTop: 10, }}>
                     <View style={{ marginTop: 5, marginLeft: 10 }}>
                         <Text style={{ fontSize: 20 }}>Activity</Text>
@@ -48,7 +58,7 @@ class ActivitiesList extends Component {
                         data={this.props.transactions}
                         keyExtractor={(item, index) => index.toString()}
                         scrollEnabled={this.props.disable}
-                        renderItem={({ item,index }) => <CustomeCell
+                        renderItem={({ item, index }) => <CustomeCell
                             navigation={this.props.navigation}
                             avatar={item.avatar}
                             senderName={item.senderName}
